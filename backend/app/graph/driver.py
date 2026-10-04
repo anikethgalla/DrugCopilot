@@ -14,7 +14,7 @@ class Neo4jConnectionManager:
 
     @classmethod
     async def get_driver(cls) -> Optional[AsyncDriver]:
-        if cls._driver is None and not cls._in_memory_fallback:
+        if cls._driver is None:
             try:
                 cls._driver = AsyncGraphDatabase.driver(
                     settings.NEO4J_URI,
@@ -22,12 +22,15 @@ class Neo4jConnectionManager:
                     max_connection_lifetime=settings.NEO4J_MAX_CONNECTION_LIFETIME,
                     max_connection_pool_size=settings.NEO4J_MAX_CONNECTION_POOL_SIZE,
                 )
-                # Verify connectivity
                 await cls._driver.verify_connectivity()
                 logger.info("Successfully connected to Neo4j database at %s", settings.NEO4J_URI)
             except Exception as e:
                 logger.warning("Neo4j is not reachable at %s (%s). Falling back to resilient graph memory mode.", settings.NEO4J_URI, e)
-                cls._in_memory_fallback = True
+                if cls._driver:
+                    try:
+                        await cls._driver.close()
+                    except Exception:
+                        pass
                 cls._driver = None
         return cls._driver
 
@@ -50,7 +53,8 @@ class Neo4jConnectionManager:
 
         if driver:
             try:
-                async with driver.session(database=settings.NEO4J_DATABASE) as session:
+                db_name = settings.NEO4J_DATABASE if settings.NEO4J_DATABASE and settings.NEO4J_DATABASE not in ("neo4j", "") else None
+                async with driver.session(database=db_name) as session:
                     result = await session.run(cypher, parameters)
                     records = await result.data()
                     return records
@@ -70,7 +74,8 @@ class Neo4jConnectionManager:
 
         if driver:
             try:
-                async with driver.session(database=settings.NEO4J_DATABASE) as session:
+                db_name = settings.NEO4J_DATABASE if settings.NEO4J_DATABASE and settings.NEO4J_DATABASE not in ("neo4j", "") else None
+                async with driver.session(database=db_name) as session:
                     result = await session.run(cypher, parameters)
                     summary = await result.consume()
                     return summary
