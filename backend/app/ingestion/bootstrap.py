@@ -59,7 +59,7 @@ async def bootstrap_biomedical_graph():
     for efo_id, name in CORE_DISEASES:
         logger.info("Ingesting disease: %s (%s)", name, efo_id)
         try:
-            await OpenTargetsIngestor.ingest_disease_targets(efo_id, limit=20)
+            await OpenTargetsIngestor.ingest_disease_targets(efo_id, disease_name=name, limit=20)
         except Exception as e:
             logger.warning("Failed ingesting %s from Open Targets: %s", name, e)
 

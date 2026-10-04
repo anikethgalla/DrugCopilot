@@ -13,12 +13,13 @@ class OpenTargetsIngestor:
     """Ingestion pipeline for Open Targets disease targets, genetic scores, and biological pathways."""
 
     @classmethod
-    async def ingest_disease_targets(cls, disease_id: str, limit: int = 30) -> Dict[str, Any]:
+    async def ingest_disease_targets(cls, disease_id: str, disease_name: Optional[str] = None, limit: int = 30) -> Dict[str, Any]:
         """
         Ingests disease-target associations, genes, proteins, pathways, and known drugs
         for a canonical disease ID (e.g. EFO_0000249 for Alzheimer's disease).
         """
-        logger.info("Ingesting Open Targets associations for disease: %s", disease_id)
+        resolved_name = disease_name or disease_id
+        logger.info("Ingesting Open Targets associations for disease: %s (%s)", resolved_name, disease_id)
 
         # 1. Fetch associated targets
         target_rows = await opentargets_client.get_associated_targets(disease_id, limit=limit)
@@ -27,8 +28,9 @@ class OpenTargetsIngestor:
         disease_props = {
             "canonical_id": disease_id,
             "efo_id": disease_id if "EFO" in disease_id else None,
-            "name": disease_id
+            "name": resolved_name
         }
+        in_memory_graph.merge_node("Disease", disease_id, disease_props)
 
         ingested_count = 0
         for row in target_rows:
@@ -69,13 +71,24 @@ class OpenTargetsIngestor:
             }
             cypher_assoc = """
             MERGE (g:Gene {ensembl_id: $ensembl_id})
+            ON CREATE SET g.canonical_id = $ensembl_id, g.ensembl_id = $ensembl_id, g.symbol = $symbol, g.name = $approved_name
+            ON MATCH SET g.canonical_id = coalesce(g.canonical_id, $ensembl_id), g.symbol = $symbol, g.name = coalesce(g.name, $approved_name)
             MERGE (d:Disease {canonical_id: $disease_id})
+            ON CREATE SET d.name = $disease_name, d.canonical_id = $disease_id
+            ON MATCH SET d.name = coalesce(d.name, $disease_name)
             MERGE (g)-[r:ASSOCIATED_WITH]->(d)
             SET r += $props
             """
             await Neo4jConnectionManager.execute_write(
                 cypher_assoc,
-                {"ensembl_id": ensembl_id, "disease_id": disease_id, "props": rel_props}
+                {
+                    "ensembl_id": ensembl_id,
+                    "disease_id": disease_id,
+                    "disease_name": resolved_name,
+                    "symbol": symbol,
+                    "approved_name": approved_name or symbol,
+                    "props": rel_props
+                }
             )
             in_memory_graph.merge_edge(ensembl_id, disease_id, "ASSOCIATED_WITH", rel_props)
 
@@ -104,12 +117,14 @@ class OpenTargetsIngestor:
                 cypher_enc = """
                 MERGE (g:Gene {ensembl_id: $ensembl_id})
                 MERGE (p:Protein {uniprot_id: $uniprot_id})
+                ON CREATE SET p.canonical_id = $uniprot_id, p.uniprot_id = $uniprot_id, p.name = $prot_name, p.gene_symbol = $symbol
+                ON MATCH SET p.canonical_id = coalesce(p.canonical_id, $uniprot_id), p.name = coalesce(p.name, $prot_name), p.gene_symbol = $symbol
                 MERGE (g)-[r:ENCODES]->(p)
                 SET r += $props
                 """
                 await Neo4jConnectionManager.execute_write(
                     cypher_enc,
-                    {"ensembl_id": ensembl_id, "uniprot_id": uniprot_id, "props": enc_props}
+                    {"ensembl_id": ensembl_id, "uniprot_id": uniprot_id, "prot_name": approved_name or symbol, "symbol": symbol, "props": enc_props}
                 )
                 in_memory_graph.merge_edge(ensembl_id, uniprot_id, "ENCODES", enc_props)
 
@@ -156,14 +171,24 @@ class OpenTargetsIngestor:
                     "is_approved": is_approved,
                     "max_clinical_phase": phase
                 }
-                in_memory_graph.merge_node("Drug", drug_chembl_id, drug_props)
-
-                treats_props = {
-                    "phase": phase,
-                    "source": "Open Targets Platform",
-                    "confidence": 1.0 if is_approved else 0.85
-                }
-                in_memory_graph.merge_edge(drug_chembl_id, disease_id, "TREATS", treats_props)
+                drug_cypher = """
+                MERGE (d:Drug {canonical_id: $drug_id})
+                ON CREATE SET d += $props
+                ON MATCH SET d += $props
+                WITH d
+                MERGE (dis:Disease {canonical_id: $disease_id})
+                MERGE (d)-[r:TREATS]->(dis)
+                SET r += $treats_props
+                """
+                await Neo4jConnectionManager.execute_write(
+                    drug_cypher,
+                    {
+                        "drug_id": drug_chembl_id,
+                        "props": drug_props,
+                        "disease_id": disease_id,
+                        "treats_props": treats_props
+                    }
+                )
 
                 # Fetch drug mechanisms to link (Drug)-[:TARGETS]->(Protein)
                 try:
@@ -184,15 +209,36 @@ class OpenTargetsIngestor:
                                             "gene_symbol": comp.get("component_synonym")
                                         }
                                         in_memory_graph.merge_node("Protein", acc, p_props)
+                                        target_rel_props = {
+                                            "mechanism": m.get("mechanism_of_action"),
+                                            "action_type": m.get("action_type", "TARGETS"),
+                                            "source": "ChEMBL",
+                                            "confidence": 1.0
+                                        }
                                         in_memory_graph.merge_edge(
                                             drug_chembl_id,
                                             acc,
                                             "TARGETS",
+                                            target_rel_props
+                                        )
+                                        # Neo4j write for TARGETS
+                                        tgt_cypher = """
+                                        MERGE (d:Drug {canonical_id: $drug_id})
+                                        MERGE (p:Protein {uniprot_id: $acc})
+                                        ON CREATE SET p += $p_props, p.canonical_id = $acc
+                                        ON MATCH SET p.canonical_id = coalesce(p.canonical_id, $acc), p.name = coalesce(p.name, $p_name), p.gene_symbol = coalesce(p.gene_symbol, $p_sym)
+                                        MERGE (d)-[r:TARGETS]->(p)
+                                        SET r += $rel_props
+                                        """
+                                        await Neo4jConnectionManager.execute_write(
+                                            tgt_cypher,
                                             {
-                                                "mechanism": m.get("mechanism_of_action"),
-                                                "action_type": m.get("action_type", "TARGETS"),
-                                                "source": "ChEMBL",
-                                                "confidence": 1.0
+                                                "drug_id": drug_chembl_id,
+                                                "acc": acc,
+                                                "p_props": p_props,
+                                                "p_name": p_props["name"],
+                                                "p_sym": p_props["gene_symbol"],
+                                                "rel_props": target_rel_props
                                             }
                                         )
                 except Exception as ex:

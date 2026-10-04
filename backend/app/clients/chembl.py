@@ -39,7 +39,11 @@ class ChEMBLClient(BaseBiomedicalClient):
         """Get mechanism of action and target associations for a drug."""
         try:
             data = await self.get("mechanism.json", params={"molecule_chembl_id": molecule_chembl_id})
-            return data.get("mechanisms", [])
+            mechs = data.get("mechanisms", [])
+            if not mechs:
+                data_parent = await self.get("mechanism.json", params={"parent_molecule_chembl_id": molecule_chembl_id})
+                mechs = data_parent.get("mechanisms", [])
+            return mechs
         except Exception as e:
             logger.warning("ChEMBL mechanisms error for '%s': %s", molecule_chembl_id, e)
             return []
@@ -48,7 +52,11 @@ class ChEMBLClient(BaseBiomedicalClient):
         """Get approved or investigational indications for a drug."""
         try:
             data = await self.get("drug_indication.json", params={"molecule_chembl_id": molecule_chembl_id})
-            return data.get("drug_indications", [])
+            inds = data.get("drug_indications", [])
+            if not inds:
+                data_parent = await self.get("drug_indication.json", params={"parent_molecule_chembl_id": molecule_chembl_id})
+                inds = data_parent.get("drug_indications", [])
+            return inds
         except Exception as e:
             logger.warning("ChEMBL indications error for '%s': %s", molecule_chembl_id, e)
             return []

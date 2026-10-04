@@ -62,10 +62,24 @@ class UniProtIngestor:
             gene_props = {
                 "canonical_id": gene_id,
                 "symbol": gene_symbol,
-                "ensembl_id": summary.get("ensembl_id")
+                "ensembl_id": summary.get("ensembl_id") or gene_id
             }
             in_memory_graph.merge_node("Gene", gene_id, gene_props)
             in_memory_graph.merge_edge(gene_id, uniprot_id, "ENCODES", {"source": "UniProt", "confidence": 1.0})
+            
+            gene_cypher = """
+            MERGE (g:Gene {ensembl_id: $ensembl_id})
+            ON CREATE SET g.canonical_id = $ensembl_id, g.symbol = $symbol
+            ON MATCH SET g.symbol = coalesce(g.symbol, $symbol)
+            WITH g
+            MERGE (p:Protein {uniprot_id: $uniprot_id})
+            MERGE (g)-[r:ENCODES]->(p)
+            SET r.source = "UniProt", r.confidence = 1.0
+            """
+            await Neo4jConnectionManager.execute_write(
+                gene_cypher,
+                {"ensembl_id": gene_props["ensembl_id"], "symbol": gene_symbol, "uniprot_id": uniprot_id}
+            )
 
         # Ingest Pathways
         for pw_name in summary.get("pathways", []):

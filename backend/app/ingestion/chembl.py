@@ -94,12 +94,20 @@ class ChEMBLIngestor:
                             cypher_rel = """
                             MERGE (d:Drug {canonical_id: $drug_id})
                             MERGE (p:Protein {uniprot_id: $prot_id})
+                            ON CREATE SET p.canonical_id = $prot_id, p.name = $prot_name, p.gene_symbol = $gene_symbol
+                            ON MATCH SET p.canonical_id = coalesce(p.canonical_id, $prot_id), p.name = coalesce(p.name, $prot_name), p.gene_symbol = coalesce(p.gene_symbol, $gene_symbol)
                             MERGE (d)-[r:TARGETS]->(p)
                             SET r += $props
                             """
                             await Neo4jConnectionManager.execute_write(
                                 cypher_rel,
-                                {"drug_id": chembl_id, "prot_id": accession, "props": rel_props}
+                                {
+                                    "drug_id": chembl_id,
+                                    "prot_id": accession,
+                                    "prot_name": comp.get("component_name") or target_name,
+                                    "gene_symbol": comp.get("component_synonym"),
+                                    "props": rel_props
+                                }
                             )
                             in_memory_graph.merge_edge(chembl_id, accession, "TARGETS", rel_props)
 
