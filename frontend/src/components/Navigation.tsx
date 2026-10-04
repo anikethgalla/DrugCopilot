@@ -9,22 +9,19 @@ import {
   Pill, 
   Dna, 
   FlaskConical, 
-  FileCheck2, 
   Database,
   Menu,
   X,
-  Sparkles,
-  Command
+  Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { href: '/copilot', label: 'Copilot', icon: Bot, badge: 'AI' },
+  { href: '/copilot', label: 'AI Copilot', icon: Bot, badge: 'Agent' },
   { href: '/explore', label: 'Graph Explorer', icon: Network },
   { href: '/drugs', label: 'Drugs', icon: Pill },
   { href: '/diseases', label: 'Diseases', icon: Dna },
   { href: '/trials', label: 'Clinical Trials', icon: FlaskConical },
-  { href: '/evidence', label: 'Evidence Standards', icon: FileCheck2 },
   { href: '/admin', label: 'ETL & Ingestion', icon: Database },
 ];
 
@@ -51,7 +48,7 @@ export default function Navigation() {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center space-x-1">
+          <nav className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href || (item.href !== '/' && pathname?.startsWith(item.href));
@@ -103,7 +100,7 @@ export default function Navigation() {
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-1.5 text-gray-400 hover:text-white rounded-md hover:bg-surface-raised"
+            className="md:hidden p-1.5 text-gray-400 hover:text-white rounded-md hover:bg-surface-raised"
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -112,7 +109,7 @@ export default function Navigation() {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-b border-surface-border bg-surface px-4 py-3 space-y-1">
+        <div className="md:hidden border-b border-surface-border bg-surface px-4 py-3 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
