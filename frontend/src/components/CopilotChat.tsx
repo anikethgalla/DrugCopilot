@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Sparkles, Terminal, ShieldAlert, Loader2 } from 'lucide-react';
+import { Send, Bot, User, Sparkles, Terminal, Loader2, CornerDownLeft } from 'lucide-react';
 import { ChatMessage, ChatResponse, RepurposingCandidate, SubgraphResponse } from '@/lib/types';
 import { sendCopilotChat } from '@/lib/api';
 
@@ -9,28 +9,30 @@ interface CopilotChatProps {
   onCandidatesFound?: (candidates: RepurposingCandidate[]) => void;
   onSubgraphReceived?: (subgraph: SubgraphResponse) => void;
   onSelectCandidate?: (candidate: RepurposingCandidate) => void;
+  initialQuery?: string;
 }
 
 const SUGGESTED_PROMPTS = [
   "Find drugs that could potentially be repurposed for Alzheimer's disease.",
   "Why was Metformin suggested for neurodegenerative diseases?",
-  "What proteins connect Donepezil to Alzheimer's disease?",
-  "Find alternative drugs that affect the same biological pathway.",
-  "Show clinical trials involving Memantine."
+  "What biological targets connect Donepezil to Alzheimer's?",
+  "Traverse 2-hop PPI network for Parkinson's disease targets.",
+  "Show clinical trials evaluating Memantine or Rapamycin."
 ];
 
 export default function CopilotChat({
   onCandidatesFound,
   onSubgraphReceived,
   onSelectCandidate,
+  initialQuery
 }: CopilotChatProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content: "Hello! I am your **AI Drug Repurposing Copilot**, connected to a live Neo4j biomedical knowledge graph and databases (ChEMBL, Open Targets, UniProt, PubChem, ClinicalTrials.gov, PubMed).\n\nAsk me any drug repurposing question, and I will generate evidence-backed computational hypotheses."
+      content: "Welcome to **DrugCopilot**. I am connected to your live **Neo4j AuraDB** graph with real-world datasets (ChEMBL, Open Targets, UniProt, PubChem, ClinicalTrials.gov, PubMed).\n\nAsk any drug repurposing or target pharmacology question, and I will extract verifiable biological chains."
     }
   ]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(initialQuery || '');
   const [loading, setLoading] = useState(false);
   const [toolStatus, setToolStatus] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -38,6 +40,12 @@ export default function CopilotChat({
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
+
+  useEffect(() => {
+    if (initialQuery && initialQuery.trim()) {
+      handleSend(initialQuery);
+    }
+  }, [initialQuery]);
 
   const handleSend = async (textToSend?: string) => {
     const query = textToSend || input;
@@ -47,7 +55,7 @@ export default function CopilotChat({
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setLoading(true);
-    setToolStatus("Querying Neo4j & biomedical APIs...");
+    setToolStatus("Querying Neo4j AuraDB & biomedical APIs...");
 
     try {
       const response = await sendCopilotChat(query, messages);
@@ -71,7 +79,7 @@ export default function CopilotChat({
         ...prev,
         {
           role: 'assistant',
-          content: `Sorry, an error occurred while analyzing the biomedical graph: ${err.message}`
+          content: `An error occurred while analyzing the biomedical graph: ${err.message}`
         }
       ]);
     } finally {
@@ -80,92 +88,114 @@ export default function CopilotChat({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
   return (
-    <div className="flex h-full flex-col bg-surface border border-surface-border rounded-xl overflow-hidden">
-      {/* Chat Messages */}
+    <div className="flex h-full flex-col bg-surface border border-surface-border rounded-xl overflow-hidden shadow-card">
+      
+      {/* Header bar */}
+      <div className="flex items-center justify-between border-b border-surface-border px-4 py-2.5 bg-surface-raised">
+        <div className="flex items-center space-x-2">
+          <div className="flex h-5 w-5 items-center justify-center rounded bg-brand-500/10 border border-brand-500/20 text-brand-400">
+            <Bot className="h-3.5 w-3.5" />
+          </div>
+          <span className="text-xs font-semibold text-white">Biomedical Reasoning Agent</span>
+        </div>
+        <span className="rounded bg-background border border-surface-border px-1.5 py-0.2 text-[10px] font-mono text-gray-400">
+          Gemini 2.5 Flash
+        </span>
+      </div>
+
+      {/* Chat Conversation Scroll Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs">
         {messages.map((m, idx) => (
           <div
             key={idx}
-            className={`flex items-start space-x-3 ${
+            className={`flex items-start space-x-2.5 ${
               m.role === 'user' ? 'justify-end' : 'justify-start'
             }`}
           >
             {m.role !== 'user' && (
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white shadow-md">
-                <Bot className="h-4 w-4" />
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-surface-raised border border-surface-border text-brand-400 mt-0.5 shadow-specular">
+                <Bot className="h-3.5 w-3.5" />
               </div>
             )}
             <div
-              className={`max-w-[85%] rounded-xl p-3.5 leading-relaxed ${
+              className={`max-w-[88%] rounded-xl p-3 leading-relaxed ${
                 m.role === 'user'
-                  ? 'bg-blue-600 text-white font-medium'
-                  : 'bg-surface-raised border border-surface-border text-gray-200 shadow-sm'
+                  ? 'bg-brand-600 text-white font-medium shadow-specular-strong'
+                  : 'bg-surface-raised border border-surface-border text-gray-200 shadow-specular'
               }`}
             >
-              <div className="prose prose-invert max-w-none whitespace-pre-wrap">
+              <div className="prose prose-invert max-w-none whitespace-pre-wrap leading-relaxed text-xs">
                 {m.content}
               </div>
             </div>
             {m.role === 'user' && (
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gray-700 text-white shadow-md">
-                <User className="h-4 w-4" />
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-surface-raised border border-surface-border text-gray-300 mt-0.5">
+                <User className="h-3.5 w-3.5" />
               </div>
             )}
           </div>
         ))}
 
         {loading && (
-          <div className="flex items-center space-x-3 text-gray-400">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600/50 text-white animate-pulse">
-              <Bot className="h-4 w-4" />
+          <div className="flex items-center space-x-2.5 text-gray-400">
+            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-surface-raised border border-surface-border text-brand-400">
+              <Bot className="h-3.5 w-3.5 animate-pulse" />
             </div>
-            <div className="flex items-center space-x-2 rounded-xl bg-surface-raised border border-surface-border p-3">
-              <Loader2 className="h-4 w-4 animate-spin text-cyan-400" />
-              <span>{toolStatus || "Analyzing graph evidence..."}</span>
+            <div className="flex items-center space-x-2 rounded-xl bg-surface-raised border border-surface-border px-3 py-2 text-xs text-gray-300 shadow-specular">
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-brand-400" />
+              <span>{toolStatus || "Traversing AuraDB knowledge graph..."}</span>
             </div>
           </div>
         )}
         <div ref={scrollRef} />
       </div>
 
-      {/* Suggested Prompts */}
-      <div className="border-t border-surface-border p-2 bg-background/50 flex flex-wrap gap-1.5 overflow-x-auto">
+      {/* Suggested Prompts Pill Bar */}
+      <div className="border-t border-surface-border p-2 bg-background/50 flex gap-1.5 overflow-x-auto">
         {SUGGESTED_PROMPTS.map((prompt, idx) => (
           <button
             key={idx}
             onClick={() => handleSend(prompt)}
-            className="rounded-full bg-surface-raised border border-surface-border px-2.5 py-1 text-[11px] text-gray-300 hover:text-white hover:border-blue-500/50 transition-colors whitespace-nowrap flex items-center space-x-1"
+            className="rounded-md bg-surface-raised border border-surface-border px-2 py-1 text-[11px] text-gray-300 hover:text-white hover:border-brand-500/40 transition-colors whitespace-nowrap shrink-0 flex items-center space-x-1 shadow-specular"
           >
-            <Sparkles className="h-3 w-3 text-cyan-400" />
+            <Sparkles className="h-3 w-3 text-brand-400 shrink-0" />
             <span>{prompt}</span>
           </button>
         ))}
       </div>
 
-      {/* Input Form */}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSend();
-        }}
-        className="border-t border-surface-border p-3 bg-surface flex items-center space-x-2"
-      >
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask a question (e.g. Find drugs that could be repurposed for Alzheimer's)..."
-          className="flex-1 rounded-xl bg-background border border-surface-border px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
-        />
-        <button
-          type="submit"
-          disabled={loading || !input.trim()}
-          className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-50 disabled:hover:bg-blue-600 transition-colors"
-        >
-          <Send className="h-4 w-4" />
-        </button>
-      </form>
+      {/* Input Textarea & Send Control */}
+      <div className="border-t border-surface-border p-2.5 bg-surface">
+        <div className="relative rounded-lg bg-background border border-surface-border focus-within:border-brand-500/70 transition-colors">
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            rows={2}
+            placeholder="Ask a repurposing hypothesis (e.g. Find candidate drugs for Parkinson's disease)..."
+            className="w-full resize-none bg-transparent px-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none"
+          />
+          <div className="flex items-center justify-between px-2.5 pb-2 pt-1 border-t border-surface-border/40 text-[10px] text-gray-500 font-mono">
+            <span>Press <kbd className="px-1 py-0.5 rounded bg-surface-raised border border-surface-border">Enter ↵</kbd> to query</span>
+            <button
+              onClick={() => handleSend()}
+              disabled={loading || !input.trim()}
+              className="inline-flex items-center space-x-1 rounded bg-brand-600 hover:bg-brand-500 disabled:opacity-40 disabled:hover:bg-brand-600 text-white px-2.5 py-1 text-xs font-semibold transition-colors shadow-specular-strong"
+            >
+              <span>Query</span>
+              <CornerDownLeft className="h-3 w-3" />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

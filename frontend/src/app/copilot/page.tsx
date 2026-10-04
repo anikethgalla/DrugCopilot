@@ -1,14 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import CopilotChat from '@/components/CopilotChat';
 import GraphVisualization from '@/components/GraphVisualization';
 import CandidateCard from '@/components/CandidateCard';
 import EvidenceDrawer from '@/components/EvidenceDrawer';
 import { RepurposingCandidate, SubgraphResponse, GraphNode, GraphEdge } from '@/lib/types';
-import { Sparkles, Network, ListOrdered, FileSearch } from 'lucide-react';
+import { Network, ListOrdered, FileSearch, Sparkles, Loader2 } from 'lucide-react';
 
-export default function CopilotPage() {
+function CopilotContent() {
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get('q') || (searchParams.get('disease') ? `Find candidate drugs that could be repurposed for ${searchParams.get('disease')}` : '');
+
   const [candidates, setCandidates] = useState<RepurposingCandidate[]>([]);
   const [selectedCandidate, setSelectedCandidate] = useState<RepurposingCandidate | null>(null);
   const [subgraph, setSubgraph] = useState<SubgraphResponse | null>(null);
@@ -28,9 +32,8 @@ export default function CopilotPage() {
 
   const handleNodeSelect = (node: GraphNode | null) => {
     if (!node) return;
-    // Find if matches a candidate drug
     const cand = candidates.find(
-      (c) => c.drug.canonical_id === node.id || c.drug.name.toLowerCase() === node.name.toLowerCase()
+      (c) => c.drug.canonical_id === node.id || c.drug.name?.toLowerCase() === node.name?.toLowerCase()
     );
     if (cand) {
       setSelectedCandidate(cand);
@@ -38,49 +41,56 @@ export default function CopilotPage() {
   };
 
   return (
-    <div className="h-[calc(100vh-6rem)] p-4">
-      <div className="grid h-full grid-cols-1 lg:grid-cols-12 gap-4">
-        {/* LEFT PANEL: AI Conversation (4 Cols) */}
-        <div className="lg:col-span-4 h-full">
+    <div className="h-[calc(100vh-5.5rem)] p-3 lg:p-4 overflow-hidden">
+      <div className="grid h-full grid-cols-1 lg:grid-cols-12 gap-3">
+        
+        {/* LEFT PANEL: Conversational Agent (4 Cols) */}
+        <div className="lg:col-span-4 h-full min-h-[400px]">
           <CopilotChat
             onCandidatesFound={handleCandidatesFound}
             onSubgraphReceived={handleSubgraphReceived}
             onSelectCandidate={setSelectedCandidate}
+            initialQuery={initialQuery}
           />
         </div>
 
-        {/* CENTER PANEL: Interactive Knowledge Graph & Candidate Cards (5 Cols) */}
-        <div className="lg:col-span-5 h-full flex flex-col bg-surface border border-surface-border rounded-xl overflow-hidden">
-          {/* Top Switcher */}
-          <div className="flex items-center justify-between border-b border-surface-border px-4 py-2.5 bg-surface-raised">
-            <div className="flex items-center space-x-1 bg-background p-1 rounded-lg border border-surface-border">
+        {/* CENTER PANEL: Interactive Graph Viewport & Candidate Matrix (5 Cols) */}
+        <div className="lg:col-span-5 h-full flex flex-col bg-surface border border-surface-border rounded-xl overflow-hidden shadow-card">
+          
+          {/* Viewport Segmented Control */}
+          <div className="flex items-center justify-between border-b border-surface-border px-3.5 py-2 bg-surface-raised">
+            <div className="flex items-center space-x-1 bg-background p-0.5 rounded-lg border border-surface-border">
               <button
                 onClick={() => setActiveTab('graph')}
                 className={`flex items-center space-x-1.5 px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
-                  activeTab === 'graph' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-400 hover:text-white'
+                  activeTab === 'graph' 
+                    ? 'bg-surface-raised text-white border border-surface-border shadow-specular' 
+                    : 'text-gray-400 hover:text-white'
                 }`}
               >
-                <Network className="h-3.5 w-3.5" />
+                <Network className="h-3.5 w-3.5 text-brand-400" />
                 <span>Knowledge Graph</span>
               </button>
               <button
                 onClick={() => setActiveTab('candidates')}
                 className={`flex items-center space-x-1.5 px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
-                  activeTab === 'candidates' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-400 hover:text-white'
+                  activeTab === 'candidates' 
+                    ? 'bg-surface-raised text-white border border-surface-border shadow-specular' 
+                    : 'text-gray-400 hover:text-white'
                 }`}
               >
-                <ListOrdered className="h-3.5 w-3.5" />
+                <ListOrdered className="h-3.5 w-3.5 text-brand-400" />
                 <span>Candidates ({candidates.length})</span>
               </button>
             </div>
 
-            <span className="text-xs text-gray-400">
-              {subgraph?.nodes?.length || 0} nodes • {subgraph?.edges?.length || 0} relationships
-            </span>
+            <div className="text-[11px] font-mono text-gray-400">
+              {subgraph?.nodes?.length || 0} nodes • {subgraph?.edges?.length || 0} edges
+            </div>
           </div>
 
-          {/* Body Content */}
-          <div className="flex-1 p-3 overflow-y-auto">
+          {/* Main Content Area */}
+          <div className="flex-1 p-2.5 overflow-y-auto">
             {activeTab === 'graph' ? (
               <div className="h-full">
                 <GraphVisualization
@@ -90,11 +100,12 @@ export default function CopilotPage() {
                 />
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {candidates.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center p-12 text-center text-gray-500">
-                    <Sparkles className="h-10 w-10 text-gray-600 mb-2" />
-                    <p className="text-xs">No candidate drugs generated yet. Ask a question on the left to discover candidates.</p>
+                  <div className="flex flex-col items-center justify-center p-12 text-center text-gray-500 space-y-2">
+                    <Sparkles className="h-8 w-8 text-gray-600 mb-1" />
+                    <p className="text-xs text-gray-400">No candidates generated yet.</p>
+                    <p className="text-[11px] text-gray-500 max-w-xs">Ask a question in the AI Copilot on the left to extract drug repurposing hypotheses.</p>
                   </div>
                 ) : (
                   candidates.map((cand, idx) => (
@@ -112,16 +123,33 @@ export default function CopilotPage() {
         </div>
 
         {/* RIGHT PANEL: Evidence & Provenance Inspector (3 Cols) */}
-        <div className="lg:col-span-3 h-full bg-surface border border-surface-border rounded-xl overflow-hidden flex flex-col">
-          <div className="border-b border-surface-border px-4 py-3 bg-surface-raised flex items-center space-x-2">
-            <FileSearch className="h-4 w-4 text-cyan-400" />
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider">Evidence Inspector</h3>
+        <div className="lg:col-span-3 h-full bg-surface border border-surface-border rounded-xl overflow-hidden flex flex-col shadow-card">
+          <div className="border-b border-surface-border px-3.5 py-2.5 bg-surface-raised flex items-center justify-between">
+            <div className="flex items-center space-x-1.5">
+              <FileSearch className="h-3.5 w-3.5 text-brand-400" />
+              <h3 className="text-xs font-semibold text-white">Evidence Inspector</h3>
+            </div>
+            <span className="text-[10px] font-mono text-gray-400">W3C PROV-DM</span>
           </div>
           <div className="flex-1 overflow-hidden">
             <EvidenceDrawer candidate={selectedCandidate} />
           </div>
         </div>
+
       </div>
     </div>
+  );
+}
+
+export default function CopilotPage() {
+  return (
+    <Suspense fallback={
+      <div className="h-[calc(100vh-5.5rem)] flex items-center justify-center space-x-2 text-xs text-gray-400 font-mono">
+        <Loader2 className="h-4 w-4 animate-spin text-brand-400" />
+        <span>Loading Copilot workspace...</span>
+      </div>
+    }>
+      <CopilotContent />
+    </Suspense>
   );
 }

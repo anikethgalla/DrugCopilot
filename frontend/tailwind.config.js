@@ -8,31 +8,46 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: "#0b0f19",
-        surface: "#111827",
-        "surface-raised": "#1f2937",
-        "surface-border": "#374151",
-        primary: {
-          50: "#eff6ff",
-          100: "#dbeafe",
-          500: "#3b82f6",
-          600: "#2563eb",
-          700: "#1d4ed8",
+        background: "#08090d",
+        "canvas-subtle": "#0c0e14",
+        surface: "#11141c",
+        "surface-raised": "#161a24",
+        "surface-overlay": "#1c212e",
+        "surface-border": "#212738",
+        "surface-border-subtle": "#171b26",
+        brand: {
+          50: "#f0f9ff",
+          100: "#e0f2fe",
+          200: "#bae6fd",
+          300: "#7dd3fc",
+          400: "#38bdf8",
+          500: "#0ea5e9",
+          600: "#0284c7",
+          700: "#0369a1",
+          800: "#075985",
+          900: "#0c4a6e",
+          accent: "#00d2ff",
         },
         biomedical: {
-          drug: "#06b6d4",
-          disease: "#ef4444",
-          target: "#8b5cf6",
-          protein: "#3b82f6",
-          gene: "#10b981",
-          pathway: "#f59e0b",
-          trial: "#ec4899",
-          publication: "#64748b"
+          drug: "#38bdf8",       // Sky
+          disease: "#fb7185",    // Rose
+          target: "#818cf8",     // Indigo
+          protein: "#60a5fa",    // Blue
+          gene: "#34d399",       // Emerald
+          pathway: "#fbbf24",    // Amber
+          trial: "#f472b6",      // Pink
+          publication: "#94a3b8" // Slate
         }
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
-        mono: ["JetBrains Mono", "monospace"]
+        sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+        mono: ["JetBrains Mono", "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "monospace"]
+      },
+      boxShadow: {
+        "specular": "inset 0 1px 0 0 rgba(255, 255, 255, 0.06)",
+        "specular-strong": "inset 0 1px 0 0 rgba(255, 255, 255, 0.12)",
+        "card": "0 0 0 1px rgba(255, 255, 255, 0.05), 0 4px 20px -2px rgba(0, 0, 0, 0.5)",
+        "glow-brand": "0 0 24px -4px rgba(14, 165, 233, 0.25)",
       }
     },
   },

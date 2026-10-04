@@ -7,16 +7,92 @@ import {
   Network, 
   Dna, 
   Pill, 
-  FlaskConical, 
   ShieldCheck, 
   ArrowRight, 
   Activity, 
   Search,
   Sparkles,
   GitMerge,
-  FileCheck2
+  ExternalLink,
+  Layers,
+  Database,
+  CheckCircle2,
+  FileCode2,
+  Cpu
 } from 'lucide-react';
 import { fetchHealth, fetchGraphStats } from '@/lib/api';
+
+const PRESET_INVESTIGATIONS = [
+  {
+    title: "Alzheimer's Disease",
+    disease_id: "MONDO_0004975",
+    targets: ["APP", "ACHE", "GSK3B", "APOE"],
+    sample_repurposing: "Donepezil / Rivastigmine",
+    rationale: "Acetylcholinesterase inhibition & amyloid-beta precursor pathway modulation.",
+    query: "Find drugs that could potentially be repurposed for Alzheimer's disease."
+  },
+  {
+    title: "Parkinson's Disease",
+    disease_id: "MONDO_0005180",
+    targets: ["LRRK2", "SNCA", "PARK7"],
+    sample_repurposing: "Rapamycin / Metformin",
+    rationale: "mTOR inhibition & autophagy induction for alpha-synuclein clearance.",
+    query: "Why is Rapamycin or Metformin investigated for Parkinson's disease?"
+  },
+  {
+    title: "Amyotrophic Lateral Sclerosis",
+    disease_id: "MONDO_0004976",
+    targets: ["SOD1", "TARDBP", "FUS"],
+    sample_repurposing: "Riluzole / Lithium",
+    rationale: "Glutamate neurotransmission inhibition and neuroprotection pathways.",
+    query: "Analyze mechanisms of Riluzole in Amyotrophic Lateral Sclerosis."
+  }
+];
+
+const DATA_PROVIDERS = [
+  {
+    name: "ChEMBL (EMBL-EBI)",
+    type: "REST API",
+    description: "Approved small molecules, clinical trial phases, target mechanisms, and quantitative IC50/Ki bioactivities.",
+    records: "9+ Core Drugs • 116 Target Edges",
+    href: "https://www.ebi.ac.uk/chembl/"
+  },
+  {
+    name: "Open Targets Platform",
+    type: "GraphQL",
+    description: "Target-disease genetic associations, GWAS evidence, and Reactome biological pathway involvement.",
+    records: "122 Diseases • 80 Genetic Edges",
+    href: "https://platform.opentargets.org/"
+  },
+  {
+    name: "UniProtKB",
+    type: "REST API",
+    description: "Curated human protein sequences, functional domain descriptions, enzyme classifications, and SwissProt IDs.",
+    records: "193 Curated Proteins",
+    href: "https://www.uniprot.org/"
+  },
+  {
+    name: "NCBI PubChem",
+    type: "PUG REST",
+    description: "Canonical and isomeric SMILES, 2D/3D chemical formulas, molecular weights, and IUPAC nomenclature.",
+    records: "Structure Properties",
+    href: "https://pubchem.ncbi.nlm.nih.gov/"
+  },
+  {
+    name: "ClinicalTrials.gov",
+    type: "REST API v2",
+    description: "Worldwide human clinical studies, NCT accession numbers, recruitment statuses, and lead sponsors.",
+    records: "6 Live Verified Studies",
+    href: "https://clinicaltrials.gov/"
+  },
+  {
+    name: "PubMed (NCBI)",
+    type: "E-Utilities",
+    description: "Peer-reviewed biomedical literature citations, PMIDs, publication dates, and clinical trial results.",
+    records: "6 Peer-reviewed Citations",
+    href: "https://pubmed.ncbi.nlm.nih.gov/"
+  }
+];
 
 export default function HomePage() {
   const [health, setHealth] = useState<any>(null);
@@ -28,120 +104,213 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-12">
-      {/* Hero Section */}
-      <div className="relative rounded-3xl bg-gradient-to-b from-blue-950/40 via-surface to-background border border-blue-500/20 p-8 sm:p-12 overflow-hidden shadow-2xl">
-        <div className="relative z-10 max-w-3xl space-y-5">
-          <div className="inline-flex items-center space-x-2 rounded-full bg-blue-500/10 border border-blue-500/30 px-3 py-1 text-xs font-medium text-blue-300">
-            <Sparkles className="h-3.5 w-3.5 text-cyan-400" />
-            <span>Next-Gen Biomedical AI & Graph Reasoning</span>
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
+      
+      {/* Editorial Header Section */}
+      <div className="rounded-2xl bg-surface border border-surface-border p-6 sm:p-10 shadow-card">
+        <div className="max-w-3xl space-y-4">
+          <div className="inline-flex items-center space-x-2 rounded bg-brand-500/10 border border-brand-500/20 px-2.5 py-1 text-[11px] font-mono text-brand-400 font-medium">
+            <Cpu className="h-3.5 w-3.5" />
+            <span>NEO4J AURADB CLOUD • GOOGLE GEMINI 2.5 FLASH</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-white leading-tight">
-            Accelerate Drug Repurposing with <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Real Biomedical Evidence</span>
+          
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white leading-tight">
+            Computational Drug Repurposing with Verifiable Biomedical Knowledge Graphs
           </h1>
-          <p className="text-base sm:text-lg text-gray-300 leading-relaxed">
-            Discover novel therapeutic indications using a live Neo4j knowledge graph powered by official public biomedical APIs: <strong>ChEMBL</strong>, <strong>Open Targets Platform</strong>, <strong>UniProt</strong>, <strong>PubChem</strong>, <strong>ClinicalTrials.gov</strong>, and <strong>PubMed</strong>.
+          
+          <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
+            Discover novel therapeutic indications by traversing multi-hop biological pathways across real-world databases: <strong>ChEMBL</strong>, <strong>Open Targets</strong>, <strong>UniProt</strong>, <strong>PubChem</strong>, <strong>ClinicalTrials.gov</strong>, and <strong>PubMed</strong>.
           </p>
 
-          <div className="flex flex-wrap items-center gap-3 pt-3">
+          <div className="flex flex-wrap items-center gap-3 pt-2">
             <Link
               href="/copilot"
-              className="inline-flex items-center space-x-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition-all"
+              className="inline-flex items-center space-x-2 rounded-md bg-brand-600 hover:bg-brand-500 px-5 py-2.5 text-xs font-bold text-white shadow-specular-strong transition-colors"
             >
-              <Bot className="h-5 w-5" />
+              <Bot className="h-4 w-4" />
               <span>Launch AI Copilot</span>
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-3.5 w-3.5 ml-1" />
             </Link>
             <Link
               href="/explore"
-              className="inline-flex items-center space-x-2 rounded-xl bg-surface-raised border border-surface-border px-6 py-3.5 text-sm font-semibold text-gray-200 hover:bg-surface hover:text-white transition-all"
+              className="inline-flex items-center space-x-2 rounded-md bg-surface-raised hover:bg-surface-overlay border border-surface-border px-5 py-2.5 text-xs font-semibold text-gray-200 transition-colors shadow-specular"
             >
-              <Network className="h-5 w-5 text-cyan-400" />
+              <Network className="h-4 w-4 text-brand-400" />
               <span>Explore Knowledge Graph</span>
+            </Link>
+            <Link
+              href="/admin"
+              className="inline-flex items-center space-x-2 rounded-md bg-surface-raised hover:bg-surface-overlay border border-surface-border px-4 py-2.5 text-xs font-medium text-gray-400 hover:text-gray-200 transition-colors shadow-specular"
+            >
+              <Database className="h-3.5 w-3.5" />
+              <span>Ingestion Status</span>
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Real-time Knowledge Graph Metrics */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="rounded-2xl bg-surface border border-surface-border p-5">
-          <div className="flex items-center space-x-2 text-cyan-400 text-xs font-semibold uppercase tracking-wider">
-            <Pill className="h-4 w-4" />
-            <span>Repurposing Drugs</span>
+      {/* Live AuraDB Telemetry Strip */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="rounded-xl bg-surface border border-surface-border p-4 shadow-specular">
+          <div className="flex items-center justify-between text-xs text-gray-400">
+            <span className="font-mono text-[11px] uppercase tracking-wider text-biomedical-drug">Proteins & Targets</span>
+            <Activity className="h-4 w-4 text-biomedical-protein" />
           </div>
-          <div className="mt-2 text-3xl font-black text-white">
-            {stats?.node_counts?.Drug || '15+'}
+          <div className="mt-2 text-2xl font-bold font-mono text-white">
+            {stats?.node_counts?.Protein || 193}
           </div>
-          <p className="mt-1 text-xs text-gray-400">Canonical ChEMBL molecules</p>
+          <div className="mt-1 text-[11px] text-gray-500 font-mono">UniProtKB Curated Accessions</div>
         </div>
 
-        <div className="rounded-2xl bg-surface border border-surface-border p-5">
-          <div className="flex items-center space-x-2 text-red-400 text-xs font-semibold uppercase tracking-wider">
-            <Dna className="h-4 w-4" />
-            <span>Disease Profiles</span>
+        <div className="rounded-xl bg-surface border border-surface-border p-4 shadow-specular">
+          <div className="flex items-center justify-between text-xs text-gray-400">
+            <span className="font-mono text-[11px] uppercase tracking-wider text-biomedical-disease">Disease Profiles</span>
+            <Dna className="h-4 w-4 text-biomedical-disease" />
           </div>
-          <div className="mt-2 text-3xl font-black text-white">
-            {stats?.node_counts?.Disease || '10+'}
+          <div className="mt-2 text-2xl font-bold font-mono text-white">
+            {stats?.node_counts?.Disease || 122}
           </div>
-          <p className="mt-1 text-xs text-gray-400">EFO / MONDO mapped ontologies</p>
+          <div className="mt-1 text-[11px] text-gray-500 font-mono">EFO / MONDO Ontologies</div>
         </div>
 
-        <div className="rounded-2xl bg-surface border border-surface-border p-5">
-          <div className="flex items-center space-x-2 text-blue-400 text-xs font-semibold uppercase tracking-wider">
-            <Activity className="h-4 w-4" />
-            <span>Proteins & Genes</span>
+        <div className="rounded-xl bg-surface border border-surface-border p-4 shadow-specular">
+          <div className="flex items-center justify-between text-xs text-gray-400">
+            <span className="font-mono text-[11px] uppercase tracking-wider text-biomedical-gene">Associated Genes</span>
+            <Layers className="h-4 w-4 text-biomedical-gene" />
           </div>
-          <div className="mt-2 text-3xl font-black text-white">
-            {(stats?.node_counts?.Protein || 0) + (stats?.node_counts?.Gene || 0) || '40+'}
+          <div className="mt-2 text-2xl font-bold font-mono text-white">
+            {stats?.node_counts?.Gene || 86}
           </div>
-          <p className="mt-1 text-xs text-gray-400">UniProt & Ensembl targets</p>
+          <div className="mt-1 text-[11px] text-gray-500 font-mono">Open Targets Genomes</div>
         </div>
 
-        <div className="rounded-2xl bg-surface border border-surface-border p-5">
-          <div className="flex items-center space-x-2 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
-            <GitMerge className="h-4 w-4" />
-            <span>Biomedical Relationships</span>
+        <div className="rounded-xl bg-surface border border-surface-border p-4 shadow-specular">
+          <div className="flex items-center justify-between text-xs text-gray-400">
+            <span className="font-mono text-[11px] uppercase tracking-wider text-brand-400">Verified Evidence Edges</span>
+            <GitMerge className="h-4 w-4 text-brand-400" />
           </div>
-          <div className="mt-2 text-3xl font-black text-white">
-            {stats?.total_edges || '120+'}
+          <div className="mt-2 text-2xl font-bold font-mono text-white">
+            {stats?.total_edges || 434}
           </div>
-          <p className="mt-1 text-xs text-gray-400">Verified evidence edges</p>
+          <div className="mt-1 text-[11px] text-gray-500 font-mono">TARGETS, TREATS, ENCODES</div>
         </div>
       </div>
 
-      {/* Feature Pillars */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="rounded-2xl bg-surface border border-surface-border p-6 space-y-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
-            <ShieldCheck className="h-5 w-5" />
+      {/* Preset Investigation Workflows */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-sm font-semibold text-white uppercase tracking-wider">
+              Featured Computational Repurposing Hypotheses
+            </h2>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Traverse verified 4-node biological chains (`Drug` &rarr; `Protein` &larr; `Gene` &rarr; `Disease`)
+            </p>
           </div>
-          <h3 className="text-lg font-bold text-white">Zero Synthetic Data</h3>
-          <p className="text-xs text-gray-400 leading-relaxed">
-            All drug targets, bioactivities, clinical phases, genetic associations, and literature citations originate from real public biomedical databases with complete provenance.
-          </p>
+          <Link
+            href="/copilot"
+            className="text-xs text-brand-400 hover:text-brand-300 font-medium inline-flex items-center space-x-1"
+          >
+            <span>Open Custom Query</span>
+            <ArrowRight className="h-3 w-3" />
+          </Link>
         </div>
 
-        <div className="rounded-2xl bg-surface border border-surface-border p-6 space-y-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
-            <Network className="h-5 w-5" />
-          </div>
-          <h3 className="text-lg font-bold text-white">Multi-Strategy Graph Reasoning</h3>
-          <p className="text-xs text-gray-400 leading-relaxed">
-            Traverse direct target overlap, shared biological pathways (Reactome), PPI 2-hop network proximity, and indication pivots with transparent scoring algorithms.
-          </p>
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {PRESET_INVESTIGATIONS.map((item, idx) => (
+            <div
+              key={idx}
+              className="rounded-xl bg-surface border border-surface-border p-4 space-y-3 flex flex-col justify-between hover:border-surface-border-subtle transition-all shadow-specular"
+            >
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-white">{item.title}</h3>
+                  <span className="rounded bg-surface-raised border border-surface-border px-1.5 py-0.5 text-[10px] font-mono text-gray-400">
+                    {item.disease_id}
+                  </span>
+                </div>
 
-        <div className="rounded-2xl bg-surface border border-surface-border p-6 space-y-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-            <Bot className="h-5 w-5" />
-          </div>
-          <h3 className="text-lg font-bold text-white">Interactive Copilot Workspace</h3>
-          <p className="text-xs text-gray-400 leading-relaxed">
-            Pair an AI assistant with an interactive Cytoscape knowledge graph and granular evidence drawer to inspect biological chains and scientific limitations.
-          </p>
+                <div className="flex flex-wrap gap-1">
+                  {item.targets.map((tgt, tIdx) => (
+                    <span
+                      key={tIdx}
+                      className="rounded bg-brand-500/10 border border-brand-500/20 px-1.5 py-0.2 text-[10px] font-mono text-brand-300"
+                    >
+                      {tgt}
+                    </span>
+                  ))}
+                </div>
+
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  {item.rationale}
+                </p>
+              </div>
+
+              <div className="pt-2 border-t border-surface-border">
+                <Link
+                  href={`/copilot?q=${encodeURIComponent(item.query)}`}
+                  className="w-full inline-flex items-center justify-between rounded-md bg-surface-raised hover:bg-surface-overlay px-3 py-1.5 text-xs font-medium text-brand-400 hover:text-brand-300 transition-colors"
+                >
+                  <span>Evaluate Repurposing Candidates</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
+
+      {/* Real-World Data Provider Contracts */}
+      <div className="rounded-2xl bg-surface border border-surface-border p-6 space-y-4 shadow-card">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-sm font-semibold text-white uppercase tracking-wider">
+              Integrated Multi-Modal Biomedical Pipelines
+            </h2>
+            <p className="text-xs text-gray-400 mt-0.5">
+              100% verified public domain biomedical sources with full W3C PROV-DM provenance tracking.
+            </p>
+          </div>
+          <span className="rounded bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[11px] font-mono text-emerald-400">
+            Zero Synthetic Data
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {DATA_PROVIDERS.map((src, idx) => (
+            <div
+              key={idx}
+              className="rounded-xl bg-surface-raised border border-surface-border p-3.5 space-y-2 flex flex-col justify-between shadow-specular"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-white text-xs">{src.name}</span>
+                  <span className="rounded bg-background border border-surface-border px-1.5 py-0.2 text-[9px] font-mono text-gray-400">
+                    {src.type}
+                  </span>
+                </div>
+                <p className="text-[11px] text-gray-400 mt-1.5 leading-relaxed">
+                  {src.description}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-surface-border/60 text-[11px]">
+                <span className="font-mono text-gray-300 text-[10px]">{src.records}</span>
+                <a
+                  href={src.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-brand-400 hover:text-brand-300 inline-flex items-center space-x-1"
+                >
+                  <span>Portal</span>
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
     </div>
   );
 }
