@@ -39,12 +39,7 @@ export default function Navigation() {
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-surface-raised border border-surface-border text-white group-hover:border-white/40 transition-colors shadow-specular">
               <Network className="h-4 w-4" />
             </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-semibold tracking-tight text-white">DrugCopilot</span>
-              <span className="hidden sm:inline-block rounded px-1.5 py-0.5 text-[10px] font-mono text-gray-400 bg-surface-raised border border-surface-border">
-                Neo4j Cloud
-              </span>
-            </div>
+            <span className="text-sm font-semibold tracking-tight text-white">DrugCopilot</span>
           </Link>
 
           {/* Desktop Navigation Links */}
@@ -76,18 +71,8 @@ export default function Navigation() {
           </nav>
         </div>
 
-        {/* Right Section: System Live Status & Quick Action */}
+        {/* Right Section: Quick Action */}
         <div className="flex items-center space-x-3">
-          {/* Live AuraDB Indicator */}
-          <div className="hidden sm:flex items-center space-x-2 rounded-md bg-surface-raised border border-surface-border px-2.5 py-1 text-[11px] font-mono text-gray-300 shadow-specular">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-60"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-            </span>
-            <span className="text-gray-400">AuraDB:</span>
-            <span className="text-white font-medium">Connected</span>
-          </div>
-
           {/* Quick Launch Button */}
           <Link
             href="/copilot"
