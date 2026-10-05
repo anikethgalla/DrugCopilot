@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { fetchClinicalTrials } from '@/lib/api';
-import { FlaskConical, Search, ExternalLink, Calendar, Users, Building2, Filter } from 'lucide-react';
+import { FlaskConical, Search, ExternalLink } from 'lucide-react';
 
 export default function TrialsPage() {
   const [trials, setTrials] = useState<any[]>([]);
@@ -32,7 +32,7 @@ export default function TrialsPage() {
       {/* Header */}
       <div>
         <h1 className="text-xl font-bold text-white tracking-tight flex items-center space-x-2">
-          <FlaskConical className="h-5 w-5 text-biomedical-trial" />
+          <FlaskConical className="h-5 w-5 text-gray-300" />
           <span>ClinicalTrials.gov Real-time Search</span>
         </h1>
         <p className="text-xs text-gray-400 mt-0.5">
@@ -51,7 +51,7 @@ export default function TrialsPage() {
             value={condition}
             onChange={(e) => setCondition(e.target.value)}
             placeholder="e.g. Alzheimer's Disease, Parkinson's"
-            className="w-full rounded-md bg-background border border-surface-border px-3 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 font-sans"
+            className="w-full rounded-md bg-background border border-surface-border px-3 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-white/50 font-sans"
           />
         </div>
 
@@ -64,7 +64,7 @@ export default function TrialsPage() {
             value={drug}
             onChange={(e) => setDrug(e.target.value)}
             placeholder="e.g. Donepezil, Metformin, Rapamycin"
-            className="w-full rounded-md bg-background border border-surface-border px-3 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 font-sans"
+            className="w-full rounded-md bg-background border border-surface-border px-3 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-white/50 font-sans"
           />
         </div>
 
@@ -72,7 +72,7 @@ export default function TrialsPage() {
           <button
             onClick={searchTrials}
             disabled={loading}
-            className="rounded-md bg-brand-600 hover:bg-brand-500 disabled:opacity-50 px-4 py-1.5 text-xs font-semibold text-white shadow-specular-strong transition-colors"
+            className="rounded-md bg-white hover:bg-neutral-200 disabled:opacity-50 px-4 py-1.5 text-xs font-bold text-black shadow-specular-strong transition-colors"
           >
             {loading ? 'Searching API...' : 'Search Trials'}
           </button>
@@ -91,11 +91,11 @@ export default function TrialsPage() {
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                 <div className="space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-biomedical-trial">{t.nct_id}</span>
+                    <span className="font-mono text-xs font-bold text-white">{t.nct_id}</span>
                     <span className="rounded bg-surface-raised border border-surface-border px-1.5 py-0.2 text-[10px] font-mono text-gray-300">
                       {t.phase || 'Phase N/A'}
                     </span>
-                    <span className="rounded bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.2 text-[10px] font-mono text-emerald-400">
+                    <span className="rounded bg-white/10 border border-white/20 px-1.5 py-0.2 text-[10px] font-mono text-white">
                       {t.status || 'Active'}
                     </span>
                   </div>
@@ -107,10 +107,10 @@ export default function TrialsPage() {
                     href={t.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center space-x-1 rounded-md bg-surface-raised hover:bg-surface-overlay border border-surface-border px-2.5 py-1 text-[11px] font-mono text-brand-300 hover:text-brand-200 transition-colors shadow-specular shrink-0"
+                    className="inline-flex items-center space-x-1 rounded-md bg-surface-raised hover:bg-surface-overlay border border-surface-border px-2.5 py-1 text-[11px] font-mono text-gray-300 hover:text-white transition-colors shadow-specular shrink-0"
                   >
                     <span>View NCT Study</span>
-                    <ExternalLink className="h-3 w-3" />
+                    <ExternalLink className="h-3 w-3 text-gray-400" />
                   </a>
                 )}
               </div>

@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import CopilotChat from '@/components/CopilotChat';
 import GraphVisualization from '@/components/GraphVisualization';
 import CandidateCard from '@/components/CandidateCard';
 import EvidenceDrawer from '@/components/EvidenceDrawer';
-import { RepurposingCandidate, SubgraphResponse, GraphNode, GraphEdge } from '@/lib/types';
+import { RepurposingCandidate, SubgraphResponse, GraphNode } from '@/lib/types';
 import { Network, ListOrdered, FileSearch, Sparkles, Loader2 } from 'lucide-react';
 
 function CopilotContent() {
@@ -68,7 +68,7 @@ function CopilotContent() {
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                <Network className="h-3.5 w-3.5 text-brand-400" />
+                <Network className="h-3.5 w-3.5 text-gray-300" />
                 <span>Knowledge Graph</span>
               </button>
               <button
@@ -79,7 +79,7 @@ function CopilotContent() {
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                <ListOrdered className="h-3.5 w-3.5 text-brand-400" />
+                <ListOrdered className="h-3.5 w-3.5 text-gray-300" />
                 <span>Candidates ({candidates.length})</span>
               </button>
             </div>
@@ -126,7 +126,7 @@ function CopilotContent() {
         <div className="lg:col-span-3 h-full bg-surface border border-surface-border rounded-xl overflow-hidden flex flex-col shadow-card">
           <div className="border-b border-surface-border px-3.5 py-2.5 bg-surface-raised flex items-center justify-between">
             <div className="flex items-center space-x-1.5">
-              <FileSearch className="h-3.5 w-3.5 text-brand-400" />
+              <FileSearch className="h-3.5 w-3.5 text-gray-300" />
               <h3 className="text-xs font-semibold text-white">Evidence Inspector</h3>
             </div>
             <span className="text-[10px] font-mono text-gray-400">W3C PROV-DM</span>
@@ -145,7 +145,7 @@ export default function CopilotPage() {
   return (
     <Suspense fallback={
       <div className="h-[calc(100vh-5.5rem)] flex items-center justify-center space-x-2 text-xs text-gray-400 font-mono">
-        <Loader2 className="h-4 w-4 animate-spin text-brand-400" />
+        <Loader2 className="h-4 w-4 animate-spin text-white" />
         <span>Loading Copilot workspace...</span>
       </div>
     }>

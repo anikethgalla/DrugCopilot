@@ -3,7 +3,7 @@
 import React from 'react';
 import { RepurposingCandidate } from '@/lib/types';
 import { formatScorePercent, getBadgeColorByClassification } from '@/lib/utils';
-import { Pill, ShieldCheck, GitMerge, ArrowRight, Activity, ChevronRight } from 'lucide-react';
+import { ShieldCheck, GitMerge } from 'lucide-react';
 
 interface CandidateCardProps {
   candidate: RepurposingCandidate;
@@ -23,7 +23,7 @@ export default function CandidateCard({
       onClick={onSelect}
       className={`group cursor-pointer rounded-xl border p-3.5 transition-all duration-150 ${
         isSelected
-          ? 'bg-surface-raised border-brand-500/80 shadow-specular-strong ring-1 ring-brand-500/40'
+          ? 'bg-surface-raised border-white/80 shadow-specular-strong ring-1 ring-white/30'
           : 'bg-surface hover:bg-surface-raised border-surface-border shadow-specular'
       }`}
     >
@@ -43,8 +43,8 @@ export default function CandidateCard({
               {classification}
             </span>
             {drug.is_approved && (
-              <span className="inline-flex items-center space-x-1 rounded bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 text-[10px] font-medium text-emerald-400">
-                <ShieldCheck className="h-3 w-3" />
+              <span className="inline-flex items-center space-x-1 rounded bg-white/10 border border-white/20 px-1.5 py-0.5 text-[10px] font-medium text-white">
+                <ShieldCheck className="h-3 w-3 text-gray-300" />
                 <span>FDA Approved</span>
               </span>
             )}
@@ -59,7 +59,7 @@ export default function CandidateCard({
         {/* Score Pill */}
         <div className="text-right shrink-0">
           <div className="flex items-baseline justify-end space-x-0.5">
-            <span className="text-xl font-bold font-mono tracking-tight text-brand-300">
+            <span className="text-xl font-bold font-mono tracking-tight text-white">
               {formatScorePercent(overall_score)}
             </span>
           </div>
@@ -69,19 +69,19 @@ export default function CandidateCard({
         </div>
       </div>
 
-      {/* Breakdown Metrics Grid */}
+      {/* Breakdown Metrics Grid (Monochrome) */}
       <div className="mt-3 grid grid-cols-3 gap-1.5 text-[11px] font-mono">
         <div className="rounded bg-background/80 border border-surface-border/70 px-2 py-1.5">
           <div className="text-gray-400 text-[9px] uppercase">Target Match</div>
-          <div className="font-semibold text-biomedical-protein mt-0.5">{formatScorePercent(score_breakdown.target_association)}</div>
+          <div className="font-semibold text-white mt-0.5">{formatScorePercent(score_breakdown.target_association)}</div>
         </div>
         <div className="rounded bg-background/80 border border-surface-border/70 px-2 py-1.5">
           <div className="text-gray-400 text-[9px] uppercase">Pathway Match</div>
-          <div className="font-semibold text-biomedical-pathway mt-0.5">{formatScorePercent(score_breakdown.pathway_overlap)}</div>
+          <div className="font-semibold text-gray-200 mt-0.5">{formatScorePercent(score_breakdown.pathway_overlap)}</div>
         </div>
         <div className="rounded bg-background/80 border border-surface-border/70 px-2 py-1.5">
           <div className="text-gray-400 text-[9px] uppercase">Clinical Trials</div>
-          <div className="font-semibold text-biomedical-trial mt-0.5">{formatScorePercent(score_breakdown.clinical_evidence)}</div>
+          <div className="font-semibold text-gray-300 mt-0.5">{formatScorePercent(score_breakdown.clinical_evidence)}</div>
         </div>
       </div>
 
@@ -89,8 +89,8 @@ export default function CandidateCard({
       {biological_paths && biological_paths.length > 0 && (
         <div className="mt-2.5 rounded bg-background/60 border border-surface-border/50 p-2 text-[11px] text-gray-300">
           <div className="flex items-center justify-between text-[10px] font-mono text-gray-400 mb-1">
-            <span className="flex items-center space-x-1 text-brand-400">
-              <GitMerge className="h-3 w-3" />
+            <span className="flex items-center space-x-1 text-gray-200">
+              <GitMerge className="h-3 w-3 text-gray-400" />
               <span>{biological_paths[0].strategy} Path</span>
             </span>
             <span className="text-gray-500">View in Drawer &rarr;</span>

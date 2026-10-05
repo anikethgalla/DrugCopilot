@@ -140,7 +140,7 @@ export default function GraphVisualization({
       <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
       {/* Floating Toolbar */}
-      <div className="absolute top-3 right-3 flex items-center space-x-1 bg-surface/90 backdrop-blur-md border border-surface-border rounded-lg p-1 shadow-card z-10">
+      <div className="absolute top-3 right-3 flex items-center space-x-1 bg-surface/95 backdrop-blur-md border border-surface-border rounded-lg p-1 shadow-card z-10">
         <select
           value={layoutName}
           onChange={(e) => setLayoutName(e.target.value as any)}
@@ -182,41 +182,41 @@ export default function GraphVisualization({
         </button>
       </div>
 
-      {/* Discrete Bottom Legend */}
-      <div className="absolute bottom-3 left-3 bg-surface/90 backdrop-blur-md border border-surface-border rounded-md px-2.5 py-1.5 text-[10px] font-mono flex items-center space-x-2.5 shadow-card z-10">
+      {/* Discrete Bottom Legend (Monochrome) */}
+      <div className="absolute bottom-3 left-3 bg-surface/95 backdrop-blur-md border border-surface-border rounded-md px-2.5 py-1.5 text-[10px] font-mono flex items-center space-x-2.5 shadow-card z-10">
         <div className="flex items-center space-x-1">
-          <span className="w-2 h-2 rounded-full bg-biomedical-drug"></span>
+          <span className="w-2 h-2 rounded-full bg-white"></span>
           <span className="text-gray-300">Drug</span>
         </div>
         <div className="flex items-center space-x-1">
-          <span className="w-2 h-2 rounded-full bg-biomedical-disease"></span>
+          <span className="w-2 h-2 rounded-full bg-neutral-300"></span>
           <span className="text-gray-300">Disease</span>
         </div>
         <div className="flex items-center space-x-1">
-          <span className="w-2 h-2 rounded-full bg-biomedical-protein"></span>
+          <span className="w-2 h-2 rounded-full bg-neutral-400"></span>
           <span className="text-gray-300">Protein</span>
         </div>
         <div className="flex items-center space-x-1">
-          <span className="w-2 h-2 rounded-full bg-biomedical-gene"></span>
+          <span className="w-2 h-2 rounded-full bg-neutral-500"></span>
           <span className="text-gray-300">Gene</span>
         </div>
         <div className="flex items-center space-x-1">
-          <span className="w-2 h-2 rounded-full bg-biomedical-pathway"></span>
+          <span className="w-2 h-2 rounded-full bg-neutral-400"></span>
           <span className="text-gray-300">Pathway</span>
         </div>
         <div className="flex items-center space-x-1">
-          <span className="w-2 h-2 rounded-full bg-biomedical-trial"></span>
+          <span className="w-2 h-2 rounded-full bg-neutral-500"></span>
           <span className="text-gray-300">Trial</span>
         </div>
       </div>
 
-      {/* Edge Provenance Popover */}
+      {/* Edge Provenance Popover (Monochrome) */}
       {selectedEdgeData && (
-        <div className="absolute top-14 left-3 max-w-sm bg-surface/95 backdrop-blur-md border border-brand-500/40 rounded-xl p-3 shadow-card z-20 text-xs">
+        <div className="absolute top-14 left-3 max-w-sm bg-surface/95 backdrop-blur-md border border-white/20 rounded-xl p-3 shadow-card z-20 text-xs">
           <div className="flex items-center justify-between pb-1.5 border-b border-surface-border">
-            <span className="font-semibold text-brand-300">Relationship Provenance</span>
+            <span className="font-semibold text-white">Relationship Provenance</span>
             <div className="flex items-center space-x-1.5">
-              <span className="rounded bg-brand-500/10 px-1.5 py-0.2 text-brand-300 font-mono text-[10px]">
+              <span className="rounded bg-white/10 px-1.5 py-0.2 text-white font-mono text-[10px] border border-white/20">
                 {selectedEdgeData.type}
               </span>
               <button onClick={() => setSelectedEdgeData(null)} className="text-gray-400 hover:text-white">
@@ -226,7 +226,7 @@ export default function GraphVisualization({
           </div>
           <div className="mt-2 space-y-1 text-gray-300 text-[11px] font-sans">
             <p><strong>Source Provider:</strong> {selectedEdgeData.provenance_source || selectedEdgeData.source_db || selectedEdgeData.source || 'Curated Database'}</p>
-            {selectedEdgeData.source_id && <p className="font-mono"><strong>Source ID:</strong> <code className="text-brand-300">{selectedEdgeData.source_id}</code></p>}
+            {selectedEdgeData.source_id && <p className="font-mono"><strong>Source ID:</strong> <code className="text-white">{selectedEdgeData.source_id}</code></p>}
             {selectedEdgeData.confidence !== undefined && <p className="font-mono"><strong>Confidence:</strong> {Math.round(selectedEdgeData.confidence * 100)}%</p>}
             {selectedEdgeData.mechanism && <p><strong>Mechanism:</strong> {selectedEdgeData.mechanism}</p>}
             {selectedEdgeData.source_url && (
@@ -234,10 +234,10 @@ export default function GraphVisualization({
                 href={selectedEdgeData.source_url}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center space-x-1 text-brand-400 hover:text-brand-300 pt-1 font-mono text-[10px]"
+                className="inline-flex items-center space-x-1 text-gray-300 hover:text-white pt-1 font-mono text-[10px] transition-colors"
               >
                 <span>Inspect Upstream Source Record</span>
-                <ExternalLink className="h-2.5 w-2.5" />
+                <ExternalLink className="h-2.5 w-2.5 text-gray-400" />
               </a>
             )}
           </div>

@@ -7,21 +7,14 @@ import {
   Network, 
   Dna, 
   Pill, 
-  ShieldCheck, 
   ArrowRight, 
   Activity, 
-  Search,
-  Sparkles,
-  GitMerge,
-  ExternalLink,
-  Layers,
-  Database,
-  CheckCircle2,
-  FileCode2,
-  Cpu
+  GitMerge, 
+  ExternalLink, 
+  Layers, 
+  Database 
 } from 'lucide-react';
 import { fetchHealth, fetchGraphStats } from '@/lib/api';
-
 import Capsule3DHero from '@/components/Capsule3DHero';
 
 const PRESET_INVESTIGATIONS = [
@@ -111,12 +104,12 @@ export default function HomePage() {
       {/* 3D Capsule Rupture Hero */}
       <Capsule3DHero />
 
-      {/* Live AuraDB Telemetry Strip */}
+      {/* Live AuraDB Telemetry Strip (Monochrome) */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="rounded-xl bg-surface border border-surface-border p-4 shadow-specular">
           <div className="flex items-center justify-between text-xs text-gray-400">
-            <span className="font-mono text-[11px] uppercase tracking-wider text-biomedical-drug">Proteins & Targets</span>
-            <Activity className="h-4 w-4 text-biomedical-protein" />
+            <span className="font-mono text-[11px] uppercase tracking-wider text-gray-300">Proteins & Targets</span>
+            <Activity className="h-4 w-4 text-gray-400" />
           </div>
           <div className="mt-2 text-2xl font-bold font-mono text-white">
             {stats?.node_counts?.Protein || 193}
@@ -126,8 +119,8 @@ export default function HomePage() {
 
         <div className="rounded-xl bg-surface border border-surface-border p-4 shadow-specular">
           <div className="flex items-center justify-between text-xs text-gray-400">
-            <span className="font-mono text-[11px] uppercase tracking-wider text-biomedical-disease">Disease Profiles</span>
-            <Dna className="h-4 w-4 text-biomedical-disease" />
+            <span className="font-mono text-[11px] uppercase tracking-wider text-gray-300">Disease Profiles</span>
+            <Dna className="h-4 w-4 text-gray-400" />
           </div>
           <div className="mt-2 text-2xl font-bold font-mono text-white">
             {stats?.node_counts?.Disease || 122}
@@ -137,8 +130,8 @@ export default function HomePage() {
 
         <div className="rounded-xl bg-surface border border-surface-border p-4 shadow-specular">
           <div className="flex items-center justify-between text-xs text-gray-400">
-            <span className="font-mono text-[11px] uppercase tracking-wider text-biomedical-gene">Associated Genes</span>
-            <Layers className="h-4 w-4 text-biomedical-gene" />
+            <span className="font-mono text-[11px] uppercase tracking-wider text-gray-300">Associated Genes</span>
+            <Layers className="h-4 w-4 text-gray-400" />
           </div>
           <div className="mt-2 text-2xl font-bold font-mono text-white">
             {stats?.node_counts?.Gene || 86}
@@ -148,8 +141,8 @@ export default function HomePage() {
 
         <div className="rounded-xl bg-surface border border-surface-border p-4 shadow-specular">
           <div className="flex items-center justify-between text-xs text-gray-400">
-            <span className="font-mono text-[11px] uppercase tracking-wider text-brand-400">Verified Evidence Edges</span>
-            <GitMerge className="h-4 w-4 text-brand-400" />
+            <span className="font-mono text-[11px] uppercase tracking-wider text-gray-300">Verified Evidence Edges</span>
+            <GitMerge className="h-4 w-4 text-gray-400" />
           </div>
           <div className="mt-2 text-2xl font-bold font-mono text-white">
             {stats?.total_edges || 434}
@@ -171,7 +164,7 @@ export default function HomePage() {
           </div>
           <Link
             href="/copilot"
-            className="text-xs text-brand-400 hover:text-brand-300 font-medium inline-flex items-center space-x-1"
+            className="text-xs text-gray-300 hover:text-white font-medium inline-flex items-center space-x-1 transition-colors"
           >
             <span>Open Custom Query</span>
             <ArrowRight className="h-3 w-3" />
@@ -196,7 +189,7 @@ export default function HomePage() {
                   {item.targets.map((tgt, tIdx) => (
                     <span
                       key={tIdx}
-                      className="rounded bg-brand-500/10 border border-brand-500/20 px-1.5 py-0.2 text-[10px] font-mono text-brand-300"
+                      className="rounded bg-white/10 border border-white/20 px-1.5 py-0.2 text-[10px] font-mono text-gray-200"
                     >
                       {tgt}
                     </span>
@@ -211,10 +204,10 @@ export default function HomePage() {
               <div className="pt-2 border-t border-surface-border">
                 <Link
                   href={`/copilot?q=${encodeURIComponent(item.query)}`}
-                  className="w-full inline-flex items-center justify-between rounded-md bg-surface-raised hover:bg-surface-overlay px-3 py-1.5 text-xs font-medium text-brand-400 hover:text-brand-300 transition-colors"
+                  className="w-full inline-flex items-center justify-between rounded-md bg-surface-raised hover:bg-surface-overlay px-3 py-1.5 text-xs font-medium text-gray-200 hover:text-white transition-colors"
                 >
                   <span>Evaluate Repurposing Candidates</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
+                  <ArrowRight className="h-3.5 w-3.5 text-gray-400" />
                 </Link>
               </div>
             </div>
@@ -233,7 +226,7 @@ export default function HomePage() {
               100% verified public domain biomedical sources with full W3C PROV-DM provenance tracking.
             </p>
           </div>
-          <span className="rounded bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[11px] font-mono text-emerald-400">
+          <span className="rounded bg-white/10 border border-white/20 px-2 py-0.5 text-[11px] font-mono text-gray-200">
             Zero Synthetic Data
           </span>
         </div>
@@ -262,10 +255,10 @@ export default function HomePage() {
                   href={src.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-brand-400 hover:text-brand-300 inline-flex items-center space-x-1"
+                  className="text-gray-300 hover:text-white inline-flex items-center space-x-1 transition-colors"
                 >
                   <span>Portal</span>
-                  <ExternalLink className="h-3 w-3" />
+                  <ExternalLink className="h-3 w-3 text-gray-400" />
                 </a>
               </div>
             </div>

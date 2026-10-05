@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { fetchDrugs, fetchDrugById } from '@/lib/api';
 import { Drug } from '@/lib/types';
-import { Pill, ShieldCheck, Search, ExternalLink, Dna, Activity, Bot, ArrowRight, Network } from 'lucide-react';
+import { Pill, Search, ExternalLink, Dna, Activity, Bot, ArrowRight } from 'lucide-react';
 
 export default function DrugsPage() {
   const [drugs, setDrugs] = useState<Drug[]>([]);
@@ -39,7 +39,7 @@ export default function DrugsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-white tracking-tight flex items-center space-x-2">
-            <Pill className="h-5 w-5 text-biomedical-drug" />
+            <Pill className="h-5 w-5 text-gray-300" />
             <span>Drug Directory & Pharmacological Targets</span>
           </h1>
           <p className="text-xs text-gray-400 mt-0.5">
@@ -54,7 +54,7 @@ export default function DrugsPage() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search drug name or ChEMBL ID..."
-            className="w-full rounded-lg bg-surface border border-surface-border pl-9 pr-3 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 font-sans"
+            className="w-full rounded-lg bg-surface border border-surface-border pl-9 pr-3 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-white/50 font-sans"
           />
         </div>
       </div>
@@ -74,7 +74,7 @@ export default function DrugsPage() {
                 onClick={() => handleSelectDrug(d.canonical_id)}
                 className={`cursor-pointer rounded-lg border p-3 transition-all ${
                   selectedDrug?.drug?.canonical_id === d.canonical_id
-                    ? 'bg-surface-raised border-brand-500/80 shadow-specular-strong ring-1 ring-brand-500/30'
+                    ? 'bg-surface-raised border-white/80 shadow-specular-strong ring-1 ring-white/30'
                     : 'bg-surface hover:bg-surface-raised border-surface-border shadow-specular'
                 }`}
               >
@@ -84,7 +84,7 @@ export default function DrugsPage() {
                     <div className="flex items-center space-x-2 mt-1">
                       <span className="font-mono text-[10px] text-gray-400">{d.canonical_id}</span>
                       {d.is_approved && (
-                        <span className="inline-flex items-center rounded bg-emerald-500/10 border border-emerald-500/20 px-1 py-0.2 text-[9px] font-mono text-emerald-400">
+                        <span className="inline-flex items-center rounded bg-white/10 border border-white/20 px-1 py-0.2 text-[9px] font-mono text-white">
                           Approved
                         </span>
                       )}
@@ -120,16 +120,16 @@ export default function DrugsPage() {
                       className="inline-flex items-center space-x-1 rounded-md bg-surface-raised hover:bg-surface-overlay border border-surface-border px-2.5 py-1.5 text-xs font-medium text-gray-300 transition-colors shadow-specular"
                     >
                       <span>ChEMBL Card</span>
-                      <ExternalLink className="h-3 w-3" />
+                      <ExternalLink className="h-3 w-3 text-gray-400" />
                     </a>
                   )}
                   <Link
                     href={`/copilot?q=${encodeURIComponent(`Evaluate new repurposing indications for ${selectedDrug.drug.name}`)}`}
-                    className="inline-flex items-center space-x-1.5 rounded-md bg-brand-600 hover:bg-brand-500 px-3.5 py-1.5 text-xs font-semibold text-white transition-colors shadow-specular-strong"
+                    className="inline-flex items-center space-x-1.5 rounded-md bg-white hover:bg-neutral-200 px-3.5 py-1.5 text-xs font-bold text-black transition-colors shadow-specular-strong"
                   >
-                    <Bot className="h-3.5 w-3.5" />
+                    <Bot className="h-3.5 w-3.5 text-black" />
                     <span>Copilot</span>
-                    <ArrowRight className="h-3 w-3 ml-0.5" />
+                    <ArrowRight className="h-3 w-3 ml-0.5 text-black" />
                   </Link>
                 </div>
               </div>
@@ -138,14 +138,14 @@ export default function DrugsPage() {
               {selectedDrug.drug.smiles && (
                 <div className="rounded-lg bg-background border border-surface-border p-3 space-y-1">
                   <span className="text-[10px] font-mono text-gray-400 uppercase tracking-wider">Canonical SMILES</span>
-                  <p className="font-mono text-xs text-brand-300 break-all">{selectedDrug.drug.smiles}</p>
+                  <p className="font-mono text-xs text-white break-all">{selectedDrug.drug.smiles}</p>
                 </div>
               )}
 
               {/* Targets */}
               <div className="space-y-2.5">
                 <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center space-x-1.5">
-                  <Dna className="h-3.5 w-3.5 text-biomedical-protein" />
+                  <Dna className="h-3.5 w-3.5 text-gray-300" />
                   <span>Target Proteins ({selectedDrug.targets?.length || 0})</span>
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -162,7 +162,7 @@ export default function DrugsPage() {
               {selectedDrug.indications && selectedDrug.indications.length > 0 && (
                 <div className="space-y-2.5 pt-2 border-t border-surface-border">
                   <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center space-x-1.5">
-                    <Activity className="h-3.5 w-3.5 text-biomedical-disease" />
+                    <Activity className="h-3.5 w-3.5 text-gray-300" />
                     <span>Approved & Investigational Indications ({selectedDrug.indications.length})</span>
                   </h3>
                   <div className="flex flex-wrap gap-1.5">

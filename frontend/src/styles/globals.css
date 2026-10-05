@@ -4,9 +4,9 @@
 
 @layer base {
   :root {
-    --background: #08090d;
-    --foreground: #f1f3f9;
-    --muted: #8b93a7;
+    --background: #09090b;
+    --foreground: #f4f4f5;
+    --muted: #a1a1aa;
   }
 
   body {
@@ -35,15 +35,15 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1c212e;
+  background: #27272e;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #2d3548;
+  background: #3f3f46;
 }
 
 /* Custom Utilities */
 .prose-code-inline {
-  @apply rounded bg-surface-raised px-1.5 py-0.5 font-mono text-[11px] text-brand-300 border border-surface-border;
+  @apply rounded bg-surface-raised px-1.5 py-0.5 font-mono text-[11px] text-gray-200 border border-surface-border;
 }

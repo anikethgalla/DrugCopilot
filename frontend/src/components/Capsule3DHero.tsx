@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import * as THREE from 'three';
 import { 
@@ -10,10 +10,7 @@ import {
   ArrowRight, 
   Sparkles, 
   RotateCcw, 
-  Layers, 
-  Activity,
-  Cpu,
-  Eye
+  Cpu
 } from 'lucide-react';
 
 interface ParticleData {
@@ -28,7 +25,6 @@ export default function Capsule3DHero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isBroken, setIsBroken] = useState(true);
   const [titleVisible, setTitleVisible] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
 
   // Animation progress ref for smooth lerping
   const animProgressRef = useRef(0); // 0 = closed, 1 = fully broken open
@@ -36,7 +32,7 @@ export default function Capsule3DHero() {
   const mousePosRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
 
   useEffect(() => {
-    // Initial sequence: start closed, then break open smoothly after 400ms
+    // Initial sequence: start closed, then break open smoothly after 300ms
     const timer = setTimeout(() => {
       targetProgressRef.current = 1;
       setIsBroken(true);
@@ -73,7 +69,7 @@ export default function Capsule3DHero() {
 
     // --- Scene Setup ---
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0a0d12, 0.04);
+    scene.fog = new THREE.FogExp2(0x09090b, 0.04);
 
     const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
     camera.position.set(0, 0, 7.2);
@@ -92,18 +88,18 @@ export default function Capsule3DHero() {
     container.appendChild(renderer.domElement);
 
     // --- Lighting ---
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0x38bdf8, 2.2);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.4);
     keyLight.position.set(4, 5, 4);
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight(0x34d399, 2.0);
+    const rimLight = new THREE.DirectionalLight(0xcccccc, 1.8);
     rimLight.position.set(-4, -4, -3);
     scene.add(rimLight);
 
-    const corePointLight = new THREE.PointLight(0x06b6d4, 3.0, 8);
+    const corePointLight = new THREE.PointLight(0xffffff, 3.0, 8);
     corePointLight.position.set(0, 0, 0);
     scene.add(corePointLight);
 
@@ -114,41 +110,41 @@ export default function Capsule3DHero() {
     const radius = 0.75;
     const halfLength = 0.85;
 
-    // Materials
-    // Top Half Material (Translucent Emerald / Cyan Glass Sheen)
+    // Materials - Pure Monochromatic Titanium & Frosted Crystal Glass
+    // Top Half Material (Translucent Frosted Platinum Glass Sheen)
     const topMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0x0ea5e9,
-      emissive: 0x0284c7,
-      emissiveIntensity: 0.25,
-      roughness: 0.18,
-      metalness: 0.1,
-      transmission: 0.6,
+      color: 0xf4f4f5,
+      emissive: 0x27272a,
+      emissiveIntensity: 0.2,
+      roughness: 0.15,
+      metalness: 0.15,
+      transmission: 0.75,
       thickness: 0.8,
       transparent: true,
-      opacity: 0.92,
-      clearcoat: 0.9,
+      opacity: 0.95,
+      clearcoat: 1.0,
       clearcoatRoughness: 0.1
     });
 
-    // Bottom Half Material (Obsidian Matte Titanium with subtle edge glow)
+    // Bottom Half Material (Obsidian Matte Titanium)
     const bottomMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0x1e293b,
-      emissive: 0x0f172a,
+      color: 0x18181b,
+      emissive: 0x09090b,
       emissiveIntensity: 0.1,
-      roughness: 0.25,
-      metalness: 0.85,
-      clearcoat: 0.8,
+      roughness: 0.22,
+      metalness: 0.9,
+      clearcoat: 0.9,
       clearcoatRoughness: 0.15
     });
 
-    // Middle Metallic Seam Ring
+    // Middle Metallic Seam Ring (Polished Platinum Silver)
     const ringGeo = new THREE.TorusGeometry(radius * 1.01, 0.04, 16, 48);
     const ringMat = new THREE.MeshStandardMaterial({
-      color: 0x38bdf8,
-      metalness: 0.9,
-      roughness: 0.2,
-      emissive: 0x0284c7,
-      emissiveIntensity: 0.4
+      color: 0xffffff,
+      metalness: 0.95,
+      roughness: 0.15,
+      emissive: 0x52525b,
+      emissiveIntensity: 0.3
     });
     const seamRing = new THREE.Mesh(ringGeo, ringMat);
     seamRing.rotation.x = Math.PI / 2;
@@ -182,19 +178,19 @@ export default function Capsule3DHero() {
     bottomGroup.add(botSphereMesh);
     capsuleGroup.add(bottomGroup);
 
-    // Inner Glowing Core / Pill Core Lattice
+    // Inner Glowing Core / Pill Core Lattice (Monochrome Platinum Silver)
     const coreGeo = new THREE.IcosahedronGeometry(0.45, 2);
     const coreMat = new THREE.MeshStandardMaterial({
-      color: 0x10b981,
-      emissive: 0x059669,
+      color: 0xffffff,
+      emissive: 0x71717a,
       emissiveIntensity: 0.8,
-      roughness: 0.3,
+      roughness: 0.2,
       wireframe: true
     });
     const innerCore = new THREE.Mesh(coreGeo, coreMat);
     capsuleGroup.add(innerCore);
 
-    // --- Molecular Bio-Particle Vortex ---
+    // --- Molecular Bio-Particle Vortex (Monochrome Shimmer) ---
     const particleCount = 220;
     const particleGeo = new THREE.BufferGeometry();
     const particlePositions = new Float32Array(particleCount * 3);
@@ -203,14 +199,13 @@ export default function Capsule3DHero() {
 
     const particlesData: ParticleData[] = [];
     const colorChoices = [
-      new THREE.Color(0x38bdf8), // Cyan
-      new THREE.Color(0x34d399), // Emerald
-      new THREE.Color(0xa78bfa), // Violet
-      new THREE.Color(0xf43f5e)  // Rose
+      new THREE.Color(0xffffff), // Pure White
+      new THREE.Color(0xe4e4e7), // Platinum Light Grey
+      new THREE.Color(0xa1a1aa), // Silver Grey
+      new THREE.Color(0x71717a)  // Neutral Slate Grey
     ];
 
     for (let i = 0; i < particleCount; i++) {
-      // Random direction outward from core
       const phi = Math.random() * Math.PI * 2;
       const theta = Math.acos(Math.random() * 2 - 1);
       const speed = 0.8 + Math.random() * 2.2;
@@ -245,7 +240,7 @@ export default function Capsule3DHero() {
     particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
     particleGeo.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
 
-    // Create custom particle material using circular texture
+    // Create custom particle material using circular monochrome texture
     const canvas = document.createElement('canvas');
     canvas.width = 64;
     canvas.height = 64;
@@ -253,8 +248,8 @@ export default function Capsule3DHero() {
     if (ctx) {
       const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
       gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-      gradient.addColorStop(0.3, 'rgba(56, 189, 248, 0.8)');
-      gradient.addColorStop(0.8, 'rgba(16, 185, 129, 0.2)');
+      gradient.addColorStop(0.35, 'rgba(244, 244, 245, 0.8)');
+      gradient.addColorStop(0.8, 'rgba(161, 161, 170, 0.25)');
       gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, 64, 64);
@@ -325,7 +320,6 @@ export default function Capsule3DHero() {
       capsuleGroup.rotation.x = Math.PI / 8 + mousePosRef.current.y * 0.5;
 
       // Top Half Break Separation Physics
-      // Separation distance: 0 when closed, up to 1.8 when broken
       const topSeparation = p * 1.6;
       topGroup.position.y = topSeparation;
       topGroup.position.x = -p * 0.6;
@@ -354,7 +348,6 @@ export default function Capsule3DHero() {
         const pData = particlesData[i];
         
         if (p > 0.01) {
-          // Explode outwards proportionally to progress
           const distScale = Math.min(p * 2.8, 2.5);
           const orbitAngle = elapsed * 0.4 + (i * 0.05);
 
@@ -366,7 +359,6 @@ export default function Capsule3DHero() {
           positions[i * 3 + 1] = curY;
           positions[i * 3 + 2] = curZ;
         } else {
-          // Sucked back inside capsule core when closed
           positions[i * 3] = (Math.random() - 0.5) * 0.2;
           positions[i * 3 + 1] = (Math.random() - 0.5) * 0.4 + floatY;
           positions[i * 3 + 2] = (Math.random() - 0.5) * 0.2;
@@ -402,10 +394,10 @@ export default function Capsule3DHero() {
   }, []);
 
   return (
-    <div className="relative w-full rounded-2xl bg-[#090d14] border border-surface-border overflow-hidden shadow-2xl">
-      {/* Background Ambience & Grid */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(14,165,233,0.12),transparent_70%)] pointer-events-none" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
+    <div className="relative w-full rounded-2xl bg-background border border-surface-border overflow-hidden shadow-card">
+      {/* Background Ambience & Grid in Pure Monochrome */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.05),transparent_70%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
 
       {/* 3D WebGL Canvas Layer */}
       <div 
@@ -420,7 +412,7 @@ export default function Capsule3DHero() {
           className="inline-flex items-center space-x-1.5 rounded-lg bg-surface-raised/90 hover:bg-surface-overlay border border-surface-border px-3 py-1.5 text-[11px] font-mono font-medium text-gray-300 hover:text-white transition-all shadow-specular backdrop-blur-md"
           title="Toggle Capsule Rupture Physics"
         >
-          <RotateCcw className={`h-3.5 w-3.5 text-brand-400 transition-transform duration-500 ${isBroken ? 'rotate-180' : ''}`} />
+          <RotateCcw className={`h-3.5 w-3.5 text-gray-300 transition-transform duration-500 ${isBroken ? 'rotate-180' : ''}`} />
           <span>{isBroken ? 'Reassemble Capsule' : 'Rupture Capsule'}</span>
         </button>
       </div>
@@ -433,8 +425,8 @@ export default function Capsule3DHero() {
       >
         {/* Top Badging */}
         <div className="flex items-center space-x-2">
-          <div className="inline-flex items-center space-x-2 rounded-full bg-brand-500/10 border border-brand-500/25 px-3 py-1 text-[11px] font-mono text-brand-400 font-medium backdrop-blur-md">
-            <Cpu className="h-3.5 w-3.5 animate-pulse text-brand-400" />
+          <div className="inline-flex items-center space-x-2 rounded-full bg-white/10 border border-white/20 px-3 py-1 text-[11px] font-mono text-gray-200 font-medium backdrop-blur-md">
+            <Cpu className="h-3.5 w-3.5 animate-pulse text-white" />
             <span>NEO4J AURADB CLOUD • MULTI-HOP BIOMEDICAL GRAPH</span>
           </div>
         </div>
@@ -442,13 +434,13 @@ export default function Capsule3DHero() {
         {/* Center / Bottom Title Typography Emerging from the Capsule Core */}
         <div className="max-w-3xl space-y-4 pointer-events-auto">
           <div className="space-y-2">
-            <div className="inline-flex items-center space-x-2 text-xs font-mono text-emerald-400 uppercase tracking-widest font-semibold">
-              <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
+            <div className="inline-flex items-center space-x-2 text-xs font-mono text-gray-300 uppercase tracking-widest font-semibold">
+              <Sparkles className="h-3.5 w-3.5 text-white" />
               <span>Computational Drug Repurposing Engine</span>
             </div>
             
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
-              Drug<span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-teal-300 to-emerald-400">Copilot</span>
+              Drug<span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-300 to-neutral-500">Copilot</span>
             </h1>
             
             <p className="text-base sm:text-lg text-gray-300 max-w-2xl leading-relaxed">
@@ -460,33 +452,33 @@ export default function Capsule3DHero() {
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <Link
               href="/copilot"
-              className="inline-flex items-center space-x-2 rounded-lg bg-brand-600 hover:bg-brand-500 px-5 py-3 text-xs font-bold text-white shadow-specular-strong transition-all transform hover:-translate-y-0.5"
+              className="inline-flex items-center space-x-2 rounded-lg bg-white hover:bg-neutral-200 text-black px-5 py-3 text-xs font-bold shadow-specular-strong transition-all transform hover:-translate-y-0.5"
             >
-              <Bot className="h-4 w-4" />
+              <Bot className="h-4 w-4 text-black" />
               <span>Launch AI Copilot</span>
-              <ArrowRight className="h-3.5 w-3.5 ml-1" />
+              <ArrowRight className="h-3.5 w-3.5 ml-1 text-black" />
             </Link>
             <Link
               href="/explore"
-              className="inline-flex items-center space-x-2 rounded-lg bg-surface-raised/90 hover:bg-surface-overlay border border-surface-border px-5 py-3 text-xs font-semibold text-gray-200 transition-all shadow-specular backdrop-blur-md"
+              className="inline-flex items-center space-x-2 rounded-lg bg-surface-raised/90 hover:bg-surface-overlay border border-surface-border px-5 py-3 text-xs font-semibold text-white transition-all shadow-specular backdrop-blur-md"
             >
-              <Network className="h-4 w-4 text-brand-400" />
+              <Network className="h-4 w-4 text-gray-300" />
               <span>Explore Knowledge Graph</span>
             </Link>
             <Link
               href="/admin"
-              className="inline-flex items-center space-x-2 rounded-lg bg-surface-raised/80 hover:bg-surface-overlay border border-surface-border px-4 py-3 text-xs font-medium text-gray-400 hover:text-gray-200 transition-all shadow-specular backdrop-blur-md"
+              className="inline-flex items-center space-x-2 rounded-lg bg-surface-raised/80 hover:bg-surface-overlay border border-surface-border px-4 py-3 text-xs font-medium text-gray-300 hover:text-white transition-all shadow-specular backdrop-blur-md"
             >
-              <Database className="h-3.5 w-3.5" />
+              <Database className="h-3.5 w-3.5 text-gray-400" />
               <span>Live AuraDB Status</span>
             </Link>
           </div>
         </div>
 
         {/* Bottom Feature Micro-Pills */}
-        <div className="flex flex-wrap items-center gap-4 text-[11px] font-mono text-gray-400 pt-4 border-t border-white/5">
-          <span className="flex items-center space-x-1.5 text-gray-300">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+        <div className="flex flex-wrap items-center gap-4 text-[11px] font-mono text-gray-400 pt-4 border-t border-surface-border">
+          <span className="flex items-center space-x-1.5 text-gray-200">
+            <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
             <span>193 UniProt Targets</span>
           </span>
           <span className="text-gray-600">•</span>
@@ -494,7 +486,7 @@ export default function Capsule3DHero() {
           <span className="text-gray-600">•</span>
           <span>434 Verified Knowledge Edges</span>
           <span className="text-gray-600">•</span>
-          <span className="text-brand-400">Zero Synthetic Hallucinations</span>
+          <span className="text-gray-300">Zero Synthetic Hallucinations</span>
         </div>
       </div>
     </div>

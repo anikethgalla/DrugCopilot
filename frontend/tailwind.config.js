@@ -8,35 +8,35 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: "#08090d",
-        "canvas-subtle": "#0c0e14",
-        surface: "#11141c",
-        "surface-raised": "#161a24",
-        "surface-overlay": "#1c212e",
-        "surface-border": "#212738",
-        "surface-border-subtle": "#171b26",
+        background: "#09090b",
+        "canvas-subtle": "#101013",
+        surface: "#141417",
+        "surface-raised": "#1a1a20",
+        "surface-overlay": "#22222a",
+        "surface-border": "#2c2c36",
+        "surface-border-subtle": "#202028",
         brand: {
-          50: "#f0f9ff",
-          100: "#e0f2fe",
-          200: "#bae6fd",
-          300: "#7dd3fc",
-          400: "#38bdf8",
-          500: "#0ea5e9",
-          600: "#0284c7",
-          700: "#0369a1",
-          800: "#075985",
-          900: "#0c4a6e",
-          accent: "#00d2ff",
+          50: "#fafafa",
+          100: "#f4f4f5",
+          200: "#e4e4e7",
+          300: "#d4d4d8",
+          400: "#a1a1aa",
+          500: "#71717a",
+          600: "#52525b",
+          700: "#3f3f46",
+          800: "#27272a",
+          900: "#18181b",
+          accent: "#ffffff",
         },
         biomedical: {
-          drug: "#38bdf8",       // Sky
-          disease: "#fb7185",    // Rose
-          target: "#818cf8",     // Indigo
-          protein: "#60a5fa",    // Blue
-          gene: "#34d399",       // Emerald
-          pathway: "#fbbf24",    // Amber
-          trial: "#f472b6",      // Pink
-          publication: "#94a3b8" // Slate
+          drug: "#ffffff",       // Pure White
+          disease: "#e4e4e7",    // Light Silver Grey
+          target: "#d4d4d8",     // Silver Grey
+          protein: "#f4f4f5",    // Platinum White
+          gene: "#a1a1aa",       // Medium Neutral Grey
+          pathway: "#d4d4d8",    // Light Grey
+          trial: "#e4e4e7",      // Light Grey
+          publication: "#71717a" // Muted Grey
         }
       },
       fontFamily: {
@@ -44,10 +44,10 @@ module.exports = {
         mono: ["JetBrains Mono", "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "monospace"]
       },
       boxShadow: {
-        "specular": "inset 0 1px 0 0 rgba(255, 255, 255, 0.06)",
-        "specular-strong": "inset 0 1px 0 0 rgba(255, 255, 255, 0.12)",
-        "card": "0 0 0 1px rgba(255, 255, 255, 0.05), 0 4px 20px -2px rgba(0, 0, 0, 0.5)",
-        "glow-brand": "0 0 24px -4px rgba(14, 165, 233, 0.25)",
+        "specular": "inset 0 1px 0 0 rgba(255, 255, 255, 0.08)",
+        "specular-strong": "inset 0 1px 0 0 rgba(255, 255, 255, 0.16)",
+        "card": "0 0 0 1px rgba(255, 255, 255, 0.08), 0 4px 20px -2px rgba(0, 0, 0, 0.6)",
+        "glow-brand": "0 0 24px -4px rgba(255, 255, 255, 0.15)",
       }
     },
   },

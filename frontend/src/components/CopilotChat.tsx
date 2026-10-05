@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Sparkles, Terminal, Loader2, CornerDownLeft } from 'lucide-react';
-import { ChatMessage, ChatResponse, RepurposingCandidate, SubgraphResponse } from '@/lib/types';
+import { Send, Bot, User, Sparkles, Loader2, CornerDownLeft } from 'lucide-react';
+import { ChatMessage, RepurposingCandidate, SubgraphResponse } from '@/lib/types';
 import { sendCopilotChat } from '@/lib/api';
 
 interface CopilotChatProps {
@@ -101,7 +101,7 @@ export default function CopilotChat({
       {/* Header bar */}
       <div className="flex items-center justify-between border-b border-surface-border px-4 py-2.5 bg-surface-raised">
         <div className="flex items-center space-x-2">
-          <div className="flex h-5 w-5 items-center justify-center rounded bg-brand-500/10 border border-brand-500/20 text-brand-400">
+          <div className="flex h-5 w-5 items-center justify-center rounded bg-white/10 border border-white/20 text-white">
             <Bot className="h-3.5 w-3.5" />
           </div>
           <span className="text-xs font-semibold text-white">Biomedical Reasoning Agent</span>
@@ -121,14 +121,14 @@ export default function CopilotChat({
             }`}
           >
             {m.role !== 'user' && (
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-surface-raised border border-surface-border text-brand-400 mt-0.5 shadow-specular">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-surface-raised border border-surface-border text-white mt-0.5 shadow-specular">
                 <Bot className="h-3.5 w-3.5" />
               </div>
             )}
             <div
               className={`max-w-[88%] rounded-xl p-3 leading-relaxed ${
                 m.role === 'user'
-                  ? 'bg-brand-600 text-white font-medium shadow-specular-strong'
+                  ? 'bg-white text-black font-semibold shadow-specular-strong'
                   : 'bg-surface-raised border border-surface-border text-gray-200 shadow-specular'
               }`}
             >
@@ -146,11 +146,11 @@ export default function CopilotChat({
 
         {loading && (
           <div className="flex items-center space-x-2.5 text-gray-400">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-surface-raised border border-surface-border text-brand-400">
+            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-surface-raised border border-surface-border text-white">
               <Bot className="h-3.5 w-3.5 animate-pulse" />
             </div>
             <div className="flex items-center space-x-2 rounded-xl bg-surface-raised border border-surface-border px-3 py-2 text-xs text-gray-300 shadow-specular">
-              <Loader2 className="h-3.5 w-3.5 animate-spin text-brand-400" />
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-white" />
               <span>{toolStatus || "Traversing AuraDB knowledge graph..."}</span>
             </div>
           </div>
@@ -164,9 +164,9 @@ export default function CopilotChat({
           <button
             key={idx}
             onClick={() => handleSend(prompt)}
-            className="rounded-md bg-surface-raised border border-surface-border px-2 py-1 text-[11px] text-gray-300 hover:text-white hover:border-brand-500/40 transition-colors whitespace-nowrap shrink-0 flex items-center space-x-1 shadow-specular"
+            className="rounded-md bg-surface-raised border border-surface-border px-2 py-1 text-[11px] text-gray-300 hover:text-white hover:border-white/40 transition-colors whitespace-nowrap shrink-0 flex items-center space-x-1 shadow-specular"
           >
-            <Sparkles className="h-3 w-3 text-brand-400 shrink-0" />
+            <Sparkles className="h-3 w-3 text-gray-300 shrink-0" />
             <span>{prompt}</span>
           </button>
         ))}
@@ -174,7 +174,7 @@ export default function CopilotChat({
 
       {/* Input Textarea & Send Control */}
       <div className="border-t border-surface-border p-2.5 bg-surface">
-        <div className="relative rounded-lg bg-background border border-surface-border focus-within:border-brand-500/70 transition-colors">
+        <div className="relative rounded-lg bg-background border border-surface-border focus-within:border-white/50 transition-colors">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -184,14 +184,14 @@ export default function CopilotChat({
             className="w-full resize-none bg-transparent px-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none"
           />
           <div className="flex items-center justify-between px-2.5 pb-2 pt-1 border-t border-surface-border/40 text-[10px] text-gray-500 font-mono">
-            <span>Press <kbd className="px-1 py-0.5 rounded bg-surface-raised border border-surface-border">Enter ↵</kbd> to query</span>
+            <span>Press <kbd className="px-1 py-0.5 rounded bg-surface-raised border border-surface-border text-gray-300">Enter ↵</kbd> to query</span>
             <button
               onClick={() => handleSend()}
               disabled={loading || !input.trim()}
-              className="inline-flex items-center space-x-1 rounded bg-brand-600 hover:bg-brand-500 disabled:opacity-40 disabled:hover:bg-brand-600 text-white px-2.5 py-1 text-xs font-semibold transition-colors shadow-specular-strong"
+              className="inline-flex items-center space-x-1 rounded bg-white hover:bg-neutral-200 disabled:opacity-40 disabled:hover:bg-white text-black px-2.5 py-1 text-xs font-bold transition-colors shadow-specular-strong"
             >
               <span>Query</span>
-              <CornerDownLeft className="h-3 w-3" />
+              <CornerDownLeft className="h-3 w-3 text-black" />
             </button>
           </div>
         </div>

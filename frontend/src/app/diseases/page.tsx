@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { fetchDiseases, fetchDiseaseById } from '@/lib/api';
 import { Disease } from '@/lib/types';
-import { Dna, Bot, Search, ExternalLink, Activity, ArrowRight, Layers, Network } from 'lucide-react';
+import { Dna, Bot, Search, Activity, ArrowRight, Layers, Network } from 'lucide-react';
 
 export default function DiseasesPage() {
   const [diseases, setDiseases] = useState<Disease[]>([]);
@@ -39,7 +39,7 @@ export default function DiseasesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-white tracking-tight flex items-center space-x-2">
-            <Dna className="h-5 w-5 text-biomedical-disease" />
+            <Dna className="h-5 w-5 text-gray-300" />
             <span>Disease Ontology & Genetic Targets</span>
           </h1>
           <p className="text-xs text-gray-400 mt-0.5">
@@ -54,7 +54,7 @@ export default function DiseasesPage() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search disease name or ontology ID..."
-            className="w-full rounded-lg bg-surface border border-surface-border pl-9 pr-3 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 font-sans"
+            className="w-full rounded-lg bg-surface border border-surface-border pl-9 pr-3 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-white/50 font-sans"
           />
         </div>
       </div>
@@ -74,7 +74,7 @@ export default function DiseasesPage() {
                 onClick={() => handleSelectDisease(d.canonical_id)}
                 className={`cursor-pointer rounded-lg border p-3 transition-all ${
                   selectedDisease?.disease?.canonical_id === d.canonical_id
-                    ? 'bg-surface-raised border-brand-500/80 shadow-specular-strong ring-1 ring-brand-500/30'
+                    ? 'bg-surface-raised border-white/80 shadow-specular-strong ring-1 ring-white/30'
                     : 'bg-surface hover:bg-surface-raised border-surface-border shadow-specular'
                 }`}
               >
@@ -108,16 +108,16 @@ export default function DiseasesPage() {
                     href={`/explore`}
                     className="inline-flex items-center space-x-1 rounded-md bg-surface-raised hover:bg-surface-overlay border border-surface-border px-3 py-1.5 text-xs font-medium text-gray-300 transition-colors shadow-specular"
                   >
-                    <Network className="h-3.5 w-3.5 text-brand-400" />
+                    <Network className="h-3.5 w-3.5 text-gray-300" />
                     <span>Explore Graph</span>
                   </Link>
                   <Link
                     href={`/copilot?disease=${encodeURIComponent(selectedDisease.disease.name || selectedDisease.disease.canonical_id)}`}
-                    className="inline-flex items-center space-x-1.5 rounded-md bg-brand-600 hover:bg-brand-500 px-3.5 py-1.5 text-xs font-semibold text-white transition-colors shadow-specular-strong"
+                    className="inline-flex items-center space-x-1.5 rounded-md bg-white hover:bg-neutral-200 px-3.5 py-1.5 text-xs font-bold text-black transition-colors shadow-specular-strong"
                   >
-                    <Bot className="h-3.5 w-3.5" />
+                    <Bot className="h-3.5 w-3.5 text-black" />
                     <span>Repurpose in Copilot</span>
-                    <ArrowRight className="h-3 w-3 ml-0.5" />
+                    <ArrowRight className="h-3 w-3 ml-0.5 text-black" />
                   </Link>
                 </div>
               </div>
@@ -126,7 +126,7 @@ export default function DiseasesPage() {
               <div className="space-y-2.5">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center space-x-1.5">
-                    <Activity className="h-3.5 w-3.5 text-biomedical-gene" />
+                    <Activity className="h-3.5 w-3.5 text-gray-300" />
                     <span>Genetic Target Drivers ({selectedDisease.associated_genes?.length || 0})</span>
                   </h3>
                   <span className="text-[10px] font-mono text-gray-400">Open Targets L2G / GWAS</span>
@@ -138,7 +138,7 @@ export default function DiseasesPage() {
                       <div className="flex justify-between items-center">
                         <span className="font-bold text-white font-mono">{g.symbol || g.name}</span>
                         {g.score && (
-                          <span className="text-biomedical-gene font-mono text-[11px] font-semibold">{Math.round(g.score * 100)}% Match</span>
+                          <span className="text-white font-mono text-[11px] font-semibold">{Math.round(g.score * 100)}% Match</span>
                         )}
                       </div>
                       <div className="text-gray-400 text-[10px] font-mono mt-1">{g.canonical_id}</div>
@@ -151,7 +151,7 @@ export default function DiseasesPage() {
               {selectedDisease.pathways && selectedDisease.pathways.length > 0 && (
                 <div className="space-y-2.5 pt-2 border-t border-surface-border">
                   <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center space-x-1.5">
-                    <Layers className="h-3.5 w-3.5 text-biomedical-pathway" />
+                    <Layers className="h-3.5 w-3.5 text-gray-300" />
                     <span>Reactome Biological Pathways ({selectedDisease.pathways.length})</span>
                   </h3>
                   <div className="flex flex-wrap gap-1.5">

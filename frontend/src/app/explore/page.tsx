@@ -5,7 +5,7 @@ import Link from 'next/link';
 import GraphVisualization from '@/components/GraphVisualization';
 import { SubgraphResponse, GraphNode, GraphEdge } from '@/lib/types';
 import { fetchEntitySubgraph } from '@/lib/api';
-import { Search, Network, Bot, ArrowRight, Layers, SlidersHorizontal, RefreshCw } from 'lucide-react';
+import { Search, Bot } from 'lucide-react';
 
 const QUICK_ENTITIES = [
   { label: "Alzheimer's", id: "MONDO_0004975", type: "Disease" },
@@ -69,7 +69,7 @@ export default function ExplorePage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search canonical ID or symbol (e.g. MONDO_0004975, CHEMBL502, P05067)..."
-              className="w-full rounded-md bg-background border border-surface-border pl-8 pr-3 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 font-mono"
+              className="w-full rounded-md bg-background border border-surface-border pl-8 pr-3 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-white/50 font-mono"
             />
           </div>
 
@@ -87,7 +87,7 @@ export default function ExplorePage() {
           <button
             type="submit"
             disabled={loading}
-            className="rounded-md bg-brand-600 hover:bg-brand-500 disabled:opacity-50 px-3.5 py-1.5 text-xs font-semibold text-white shadow-specular-strong transition-colors"
+            className="rounded-md bg-white hover:bg-neutral-200 disabled:opacity-50 px-3.5 py-1.5 text-xs font-bold text-black shadow-specular-strong transition-colors"
           >
             {loading ? 'Traversing...' : 'Explore'}
           </button>
@@ -102,7 +102,7 @@ export default function ExplorePage() {
                 onClick={() => handleQuickSelect(q)}
                 className={`rounded px-2 py-0.5 text-[10px] font-mono border transition-colors ${
                   query === q.id 
-                    ? 'bg-brand-500/20 text-brand-300 border-brand-500/40' 
+                    ? 'bg-white/15 text-white border-white/40' 
                     : 'bg-surface-raised text-gray-400 border-surface-border hover:text-white'
                 }`}
               >
@@ -143,18 +143,18 @@ export default function ExplorePage() {
           height="100%"
         />
 
-        {/* Selected Node Details Floating Card */}
+        {/* Selected Node Details Floating Card (Monochrome) */}
         {selectedNode && (
-          <div className="absolute bottom-4 right-4 w-80 bg-surface/95 backdrop-blur-md border border-brand-500/40 rounded-xl p-3.5 shadow-card z-20 text-xs">
+          <div className="absolute bottom-4 right-4 w-80 bg-surface/95 backdrop-blur-md border border-white/20 rounded-xl p-3.5 shadow-card z-20 text-xs">
             <div className="flex items-center justify-between pb-2 border-b border-surface-border">
               <span className="font-bold text-white tracking-tight">{selectedNode.name}</span>
-              <span className="rounded bg-brand-500/10 border border-brand-500/20 px-1.5 py-0.2 text-brand-300 font-mono text-[10px]">
+              <span className="rounded bg-white/10 border border-white/20 px-1.5 py-0.2 text-white font-mono text-[10px]">
                 {selectedNode.label}
               </span>
             </div>
             
             <div className="mt-2.5 space-y-1 text-gray-300 font-mono text-[11px]">
-              <p><strong>ID:</strong> <code className="text-brand-300">{selectedNode.id}</code></p>
+              <p><strong>ID:</strong> <code className="text-white">{selectedNode.id}</code></p>
               {selectedNode.properties.gene_symbol && (
                 <p><strong>Gene:</strong> {selectedNode.properties.gene_symbol}</p>
               )}
@@ -169,15 +169,15 @@ export default function ExplorePage() {
             <div className="mt-3 pt-2 border-t border-surface-border flex items-center gap-2">
               <button
                 onClick={() => loadGraph(selectedNode.id, maxDepth, selectedNode.label as any)}
-                className="flex-1 rounded bg-surface-raised hover:bg-surface-overlay border border-surface-border py-1.5 text-xs text-gray-300 font-medium transition-colors text-center"
+                className="flex-1 rounded bg-surface-raised hover:bg-surface-overlay border border-surface-border py-1.5 text-xs text-gray-200 font-medium transition-colors text-center"
               >
                 Re-center
               </button>
               <Link
                 href={`/copilot?q=${encodeURIComponent(`Analyze repurposing opportunities involving ${selectedNode.name}`)}`}
-                className="flex-1 rounded bg-brand-600 hover:bg-brand-500 py-1.5 text-xs text-white font-semibold transition-colors text-center inline-flex items-center justify-center space-x-1"
+                className="flex-1 rounded bg-white hover:bg-neutral-200 py-1.5 text-xs text-black font-bold transition-colors text-center inline-flex items-center justify-center space-x-1 shadow-specular-strong"
               >
-                <Bot className="h-3 w-3" />
+                <Bot className="h-3 w-3 text-black" />
                 <span>Copilot</span>
               </Link>
             </div>

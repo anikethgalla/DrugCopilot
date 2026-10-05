@@ -16,14 +16,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className="min-h-screen flex flex-col bg-background text-gray-100 antialiased selection:bg-brand-500/30 selection:text-white">
+      <body className="min-h-screen flex flex-col bg-background text-gray-100 antialiased selection:bg-white/20 selection:text-white">
         <MedicalDisclaimer />
         <Navigation />
         <main className="flex-1">
           {children}
         </main>
         
-        {/* Discrete Minimal Footer */}
+        {/* Discrete Minimal Monochrome Footer */}
         <footer className="w-full border-t border-surface-border bg-background py-4 px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] font-mono text-gray-400">
             <div className="flex items-center space-x-3">
@@ -33,17 +33,17 @@ export default function RootLayout({
             </div>
 
             <div className="flex items-center space-x-4">
-              <Link href="/evidence" className="hover:text-gray-300 transition-colors">
+              <Link href="/evidence" className="hover:text-white transition-colors">
                 W3C PROV-DM Standards
               </Link>
-              <Link href="/admin" className="hover:text-gray-300 transition-colors">
+              <Link href="/admin" className="hover:text-white transition-colors">
                 ETL Status
               </Link>
               <a
                 href="https://github.com/anikethgalla/DrugCopilot"
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-gray-300 transition-colors"
+                className="hover:text-white transition-colors"
               >
                 GitHub
               </a>

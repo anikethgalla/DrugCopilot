@@ -6,14 +6,10 @@ import { formatScorePercent, getBadgeColorByClassification } from '@/lib/utils';
 import { 
   FileText, 
   ExternalLink, 
-  AlertOctagon, 
+  AlertCircle, 
   Activity, 
   Dna, 
-  GitBranch,
-  Pill,
-  ShieldCheck,
-  FlaskConical,
-  BookOpen
+  GitBranch
 } from 'lucide-react';
 
 interface EvidenceDrawerProps {
@@ -47,7 +43,7 @@ export default function EvidenceDrawer({ candidate, onClose }: EvidenceDrawerPro
           </span>
           <div className="text-right">
             <span className="text-xs text-gray-400 font-mono mr-1.5">Score:</span>
-            <span className="text-base font-bold font-mono text-brand-300">
+            <span className="text-base font-bold font-mono text-white">
               {formatScorePercent(overall_score)}
             </span>
           </div>
@@ -58,10 +54,10 @@ export default function EvidenceDrawer({ candidate, onClose }: EvidenceDrawerPro
         </h2>
 
         <div className="flex flex-wrap items-center gap-2 text-[11px] text-gray-400 font-mono mt-1">
-          {drug.chembl_id && <span>ChEMBL: <code className="text-brand-300">{drug.chembl_id}</code></span>}
-          {drug.pubchem_cid && <span>• PubChem: <code className="text-brand-300">CID {drug.pubchem_cid}</code></span>}
+          {drug.chembl_id && <span>ChEMBL: <code className="text-gray-200">{drug.chembl_id}</code></span>}
+          {drug.pubchem_cid && <span>• PubChem: <code className="text-gray-200">CID {drug.pubchem_cid}</code></span>}
           {drug.is_approved && (
-            <span className="text-emerald-400 font-medium">• Approved</span>
+            <span className="text-white font-medium">• Approved</span>
           )}
         </div>
       </div>
@@ -69,16 +65,16 @@ export default function EvidenceDrawer({ candidate, onClose }: EvidenceDrawerPro
       {/* Mechanism Hypothesis */}
       <div className="rounded-lg bg-surface-raised border border-surface-border p-3 space-y-1.5 shadow-specular">
         <div className="flex items-center space-x-1.5 text-xs font-semibold text-white">
-          <Dna className="h-3.5 w-3.5 text-brand-400" />
+          <Dna className="h-3.5 w-3.5 text-gray-400" />
           <span>Biological Mechanism Hypothesis</span>
         </div>
         <p className="text-[11px] text-gray-300 leading-relaxed font-sans">{candidate.mechanism_hypothesis}</p>
       </div>
 
-      {/* Mathematical Score Breakdown */}
+      {/* Mathematical Score Breakdown (Monochrome Progress Bars) */}
       <div className="space-y-2">
         <div className="flex items-center space-x-1.5 text-xs font-semibold text-white">
-          <Activity className="h-3.5 w-3.5 text-brand-400" />
+          <Activity className="h-3.5 w-3.5 text-gray-400" />
           <span>Explainable Score Breakdown</span>
         </div>
 
@@ -86,50 +82,50 @@ export default function EvidenceDrawer({ candidate, onClose }: EvidenceDrawerPro
           <div>
             <div className="flex justify-between text-[11px] font-mono text-gray-200">
               <span className="text-gray-400">Target Association (30%)</span>
-              <span className="text-biomedical-protein font-semibold">{formatScorePercent(score_breakdown.target_association)}</span>
+              <span className="text-white font-semibold">{formatScorePercent(score_breakdown.target_association)}</span>
             </div>
             <div className="w-full bg-background rounded-full h-1 mt-1 overflow-hidden">
-              <div className="bg-biomedical-protein h-1 rounded-full" style={{ width: `${score_breakdown.target_association * 100}%` }}></div>
+              <div className="bg-white h-1 rounded-full" style={{ width: `${score_breakdown.target_association * 100}%` }}></div>
             </div>
           </div>
 
           <div>
             <div className="flex justify-between text-[11px] font-mono text-gray-200">
               <span className="text-gray-400">Pathway Overlap (20%)</span>
-              <span className="text-biomedical-pathway font-semibold">{formatScorePercent(score_breakdown.pathway_overlap)}</span>
+              <span className="text-gray-200 font-semibold">{formatScorePercent(score_breakdown.pathway_overlap)}</span>
             </div>
             <div className="w-full bg-background rounded-full h-1 mt-1 overflow-hidden">
-              <div className="bg-biomedical-pathway h-1 rounded-full" style={{ width: `${score_breakdown.pathway_overlap * 100}%` }}></div>
+              <div className="bg-neutral-300 h-1 rounded-full" style={{ width: `${score_breakdown.pathway_overlap * 100}%` }}></div>
             </div>
           </div>
 
           <div>
             <div className="flex justify-between text-[11px] font-mono text-gray-200">
               <span className="text-gray-400">Network Proximity (20%)</span>
-              <span className="text-biomedical-target font-semibold">{formatScorePercent(score_breakdown.network_proximity)}</span>
+              <span className="text-gray-300 font-semibold">{formatScorePercent(score_breakdown.network_proximity)}</span>
             </div>
             <div className="w-full bg-background rounded-full h-1 mt-1 overflow-hidden">
-              <div className="bg-biomedical-target h-1 rounded-full" style={{ width: `${score_breakdown.network_proximity * 100}%` }}></div>
+              <div className="bg-neutral-400 h-1 rounded-full" style={{ width: `${score_breakdown.network_proximity * 100}%` }}></div>
             </div>
           </div>
 
           <div>
             <div className="flex justify-between text-[11px] font-mono text-gray-200">
               <span className="text-gray-400">Clinical Validation (15%)</span>
-              <span className="text-biomedical-trial font-semibold">{formatScorePercent(score_breakdown.clinical_evidence)}</span>
+              <span className="text-gray-300 font-semibold">{formatScorePercent(score_breakdown.clinical_evidence)}</span>
             </div>
             <div className="w-full bg-background rounded-full h-1 mt-1 overflow-hidden">
-              <div className="bg-biomedical-trial h-1 rounded-full" style={{ width: `${score_breakdown.clinical_evidence * 100}%` }}></div>
+              <div className="bg-neutral-400 h-1 rounded-full" style={{ width: `${score_breakdown.clinical_evidence * 100}%` }}></div>
             </div>
           </div>
 
           <div>
             <div className="flex justify-between text-[11px] font-mono text-gray-200">
               <span className="text-gray-400">Literature Citations (10%)</span>
-              <span className="text-biomedical-gene font-semibold">{formatScorePercent(score_breakdown.publication_evidence)}</span>
+              <span className="text-gray-400 font-semibold">{formatScorePercent(score_breakdown.publication_evidence)}</span>
             </div>
             <div className="w-full bg-background rounded-full h-1 mt-1 overflow-hidden">
-              <div className="bg-biomedical-gene h-1 rounded-full" style={{ width: `${score_breakdown.publication_evidence * 100}%` }}></div>
+              <div className="bg-neutral-500 h-1 rounded-full" style={{ width: `${score_breakdown.publication_evidence * 100}%` }}></div>
             </div>
           </div>
         </div>
@@ -139,13 +135,13 @@ export default function EvidenceDrawer({ candidate, onClose }: EvidenceDrawerPro
       {biological_paths && biological_paths.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center space-x-1.5 text-xs font-semibold text-white">
-            <GitBranch className="h-3.5 w-3.5 text-emerald-400" />
+            <GitBranch className="h-3.5 w-3.5 text-gray-400" />
             <span>Biological Traversal Chains</span>
           </div>
           <div className="space-y-2">
             {biological_paths.map((p, idx) => (
               <div key={idx} className="rounded-lg bg-surface-raised border border-surface-border p-3 space-y-2 shadow-specular">
-                <span className="font-mono text-[10px] uppercase font-bold text-emerald-400">{p.strategy} Strategy</span>
+                <span className="font-mono text-[10px] uppercase font-bold text-white">{p.strategy} Strategy</span>
                 <p className="text-[11px] text-gray-300 leading-relaxed font-sans">{p.description}</p>
                 <div className="flex flex-wrap items-center gap-1 pt-1 font-mono text-[10px]">
                   {p.steps.map((step, sIdx) => (
@@ -167,7 +163,7 @@ export default function EvidenceDrawer({ candidate, onClose }: EvidenceDrawerPro
       {evidence_items && evidence_items.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center space-x-1.5 text-xs font-semibold text-white">
-            <FileText className="h-3.5 w-3.5 text-brand-400" />
+            <FileText className="h-3.5 w-3.5 text-gray-400" />
             <span>Multi-modal Provenance Items</span>
           </div>
           <div className="space-y-1.5">
@@ -175,7 +171,7 @@ export default function EvidenceDrawer({ candidate, onClose }: EvidenceDrawerPro
               <div key={idx} className="rounded-lg bg-surface-raised border border-surface-border p-2.5 space-y-1 shadow-specular">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-white text-[11px]">{ev.title}</span>
-                  <span className="rounded bg-brand-500/10 px-1 py-0.2 text-[9px] font-mono text-brand-300 border border-brand-500/20">
+                  <span className="rounded bg-white/10 px-1 py-0.2 text-[9px] font-mono text-gray-300 border border-white/20">
                     {ev.source}
                   </span>
                 </div>
@@ -185,10 +181,10 @@ export default function EvidenceDrawer({ candidate, onClose }: EvidenceDrawerPro
                     href={ev.source_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center space-x-1 text-[10px] font-mono text-brand-400 hover:text-brand-300 pt-0.5"
+                    className="inline-flex items-center space-x-1 text-[10px] font-mono text-gray-300 hover:text-white pt-0.5 transition-colors"
                   >
                     <span>Inspect Record in {ev.source}</span>
-                    <ExternalLink className="h-2.5 w-2.5" />
+                    <ExternalLink className="h-2.5 w-2.5 text-gray-400" />
                   </a>
                 )}
               </div>
@@ -197,14 +193,14 @@ export default function EvidenceDrawer({ candidate, onClose }: EvidenceDrawerPro
         </div>
       )}
 
-      {/* Scientific Limitations */}
+      {/* Scientific Limitations (Monochrome) */}
       {limitations && limitations.length > 0 && (
-        <div className="rounded-lg bg-amber-950/20 border border-amber-500/20 p-3 space-y-1.5">
-          <div className="flex items-center space-x-1.5 text-xs font-semibold text-amber-300">
-            <AlertOctagon className="h-3.5 w-3.5 text-amber-400" />
+        <div className="rounded-lg bg-surface-raised border border-surface-border p-3 space-y-1.5 shadow-specular">
+          <div className="flex items-center space-x-1.5 text-xs font-semibold text-gray-200">
+            <AlertCircle className="h-3.5 w-3.5 text-gray-400" />
             <span>Scientific Limitations & Caveats</span>
           </div>
-          <ul className="list-disc list-inside space-y-1 text-[11px] text-amber-200/80 font-sans">
+          <ul className="list-disc list-inside space-y-1 text-[11px] text-gray-400 font-sans">
             {limitations.map((lim, idx) => (
               <li key={idx}>{lim}</li>
             ))}
