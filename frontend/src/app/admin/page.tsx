@@ -26,14 +26,13 @@ import {
 import { useAuth } from '@/lib/auth-context';
 
 export default function AdminPage() {
-  const { user, role, isAuthenticated, isLoading: authLoading, loginPreset } = useAuth();
+  const { user, role, isAuthenticated, isLoading: authLoading } = useAuth();
 
   const [health, setHealth] = useState<any | null>(null);
   const [stats, setStats] = useState<any | null>(null);
   const [ingestionInfo, setIngestionInfo] = useState<any | null>(null);
   const [loadingSource, setLoadingSource] = useState<string | null>(null);
   const [syncStatus, setSyncStatus] = useState<string | null>(null);
-  const [isElevating, setIsElevating] = useState(false);
 
   const refreshDashboard = () => {
     fetchHealth().then(setHealth).catch(console.error);
@@ -58,18 +57,6 @@ export default function AdminPage() {
       setSyncStatus(`Ingestion alert: ${e.message}`);
     } finally {
       setLoadingSource(null);
-    }
-  };
-
-  const handleElevateToAdmin = async () => {
-    setIsElevating(true);
-    try {
-      await loginPreset('admin');
-      refreshDashboard();
-    } catch (err: any) {
-      console.error(err);
-    } finally {
-      setIsElevating(false);
     }
   };
 
@@ -108,21 +95,20 @@ export default function AdminPage() {
           )}
 
           <div className="space-y-2.5 pt-2">
-            <button
-              onClick={handleElevateToAdmin}
-              disabled={isElevating}
-              className="w-full inline-flex items-center justify-center space-x-2 rounded-lg bg-white hover:bg-neutral-200 text-black py-2.5 text-xs font-bold transition-all shadow-specular-strong disabled:opacity-50"
+            <Link
+              href="/login?redirect=/admin"
+              className="w-full inline-flex items-center justify-center space-x-2 rounded-lg bg-white hover:bg-neutral-200 text-black py-2.5 text-xs font-bold transition-all shadow-specular-strong"
             >
               <KeyRound className="h-3.5 w-3.5 text-black" />
-              <span>{isElevating ? 'Elevating credentials...' : '1-Click Elevate to Administrator'}</span>
-            </button>
+              <span>Sign In as Administrator</span>
+              <ArrowRight className="h-3.5 w-3.5 ml-1 text-black" />
+            </Link>
 
             <Link
-              href="/login"
+              href="/copilot"
               className="w-full inline-flex items-center justify-center space-x-2 rounded-lg bg-surface-raised hover:bg-surface-overlay border border-surface-border py-2 text-xs font-medium text-gray-300 hover:text-white transition-colors"
             >
-              <span>Switch Accounts / Custom Login</span>
-              <ArrowRight className="h-3.5 w-3.5" />
+              <span>Return to Researcher Portal</span>
             </Link>
           </div>
         </div>
