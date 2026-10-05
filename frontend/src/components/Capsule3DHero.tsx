@@ -65,11 +65,11 @@ export default function Capsule3DHero() {
 
     const container = containerRef.current;
     const width = container.clientWidth;
-    const height = container.clientHeight || 540;
+    const height = container.clientHeight || window.innerHeight - 120;
 
     // --- Scene Setup ---
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x09090b, 0.04);
+    scene.fog = new THREE.FogExp2(0x09090b, 0.035);
 
     const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
     camera.position.set(0, 0, 7.2);
@@ -88,10 +88,10 @@ export default function Capsule3DHero() {
     container.appendChild(renderer.domElement);
 
     // --- Lighting ---
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.4);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
     keyLight.position.set(4, 5, 4);
     scene.add(keyLight);
 
@@ -287,7 +287,7 @@ export default function Capsule3DHero() {
     const handleResize = () => {
       if (!container) return;
       const w = container.clientWidth;
-      const h = container.clientHeight || 540;
+      const h = container.clientHeight || window.innerHeight - 120;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
@@ -394,7 +394,7 @@ export default function Capsule3DHero() {
   }, []);
 
   return (
-    <div className="relative w-full rounded-2xl bg-background border border-surface-border overflow-hidden shadow-card">
+    <div className="relative w-full h-[calc(100vh-6.5rem)] min-h-[580px] rounded-2xl bg-background border border-surface-border overflow-hidden shadow-card flex flex-col justify-between">
       {/* Background Ambience & Grid in Pure Monochrome */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.05),transparent_70%)] pointer-events-none" />
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
@@ -402,7 +402,7 @@ export default function Capsule3DHero() {
       {/* 3D WebGL Canvas Layer */}
       <div 
         ref={containerRef} 
-        className="w-full h-[540px] sm:h-[600px] cursor-grab active:cursor-grabbing relative z-10"
+        className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing z-10"
       />
 
       {/* Floating Interactive Controls (Top Right) */}
@@ -419,7 +419,7 @@ export default function Capsule3DHero() {
 
       {/* Emerged Title & Hero Content Overlay (Synchronized with Capsule Break) */}
       <div 
-        className={`absolute inset-0 z-20 flex flex-col justify-between p-6 sm:p-10 pointer-events-none transition-all duration-700 ease-out ${
+        className={`relative z-20 flex flex-col justify-between h-full p-6 sm:p-10 pointer-events-none transition-all duration-700 ease-out ${
           titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
         }`}
       >
