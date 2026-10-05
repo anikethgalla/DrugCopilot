@@ -16,6 +16,7 @@ from app.api.routes_copilot import router as copilot_router
 from app.api.routes_graph import router as graph_router
 from app.api.routes_ingestion import router as ingestion_router
 from app.api.routes_evidence import router as evidence_router
+from app.api.routes_auth import router as auth_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -68,6 +69,7 @@ app.include_router(copilot_router)
 app.include_router(graph_router)
 app.include_router(ingestion_router)
 app.include_router(evidence_router)
+app.include_router(auth_router)
 
 
 @app.get("/health", tags=["Health"])

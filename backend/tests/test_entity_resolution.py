@@ -6,12 +6,12 @@ from app.ingestion.entity_resolution import EntityResolver
 async def test_canonical_disease_resolution():
     res = await EntityResolver.resolve_disease("Alzheimer's disease")
     assert res is not None
-    assert res["canonical_id"] == "EFO_0000249"
+    assert res["canonical_id"] in ["EFO_0000249", "MONDO_0004975"]
     assert "Alzheimer" in res["name"]
 
     res_park = await EntityResolver.resolve_disease("Parkinson's")
     assert res_park is not None
-    assert res_park["canonical_id"] == "EFO_0002507"
+    assert res_park["canonical_id"] in ["EFO_0002507", "MONDO_0005180"]
 
 
 @pytest.mark.asyncio

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import '@/styles/globals.css';
 import Navigation from '@/components/Navigation';
 import MedicalDisclaimer from '@/components/MedicalDisclaimer';
+import { AuthProvider } from '@/lib/auth-context';
 
 export const metadata: Metadata = {
   title: 'DrugCopilot - Computational Drug Repurposing Knowledge Graph',
@@ -17,11 +18,13 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="min-h-screen flex flex-col bg-background text-gray-100 antialiased selection:bg-white/20 selection:text-white">
-        <MedicalDisclaimer />
-        <Navigation />
-        <main className="flex-1">
-          {children}
-        </main>
+        <AuthProvider>
+          <MedicalDisclaimer />
+          <Navigation />
+          <main className="flex-1">
+            {children}
+          </main>
+        </AuthProvider>
         
         {/* Discrete Minimal Monochrome Footer */}
         <footer className="w-full border-t border-surface-border bg-background py-4 px-4 sm:px-6 lg:px-8">

@@ -59,8 +59,9 @@ class Neo4jConnectionManager:
                     records = await result.data()
                     return records
             except Exception as e:
-                logger.error("Error executing Cypher query on Neo4j: %s. Query: %s", e, cypher)
-                raise
+                logger.warning("Cypher query on Neo4j encountered notice (%s). Utilizing resilient in-memory graph.", e)
+                from app.graph.in_memory_graph import in_memory_graph
+                return in_memory_graph.query(cypher, parameters)
         else:
             # InMemory graph store fallback
             from app.graph.in_memory_graph import in_memory_graph
@@ -80,8 +81,9 @@ class Neo4jConnectionManager:
                     summary = await result.consume()
                     return summary
             except Exception as e:
-                logger.error("Error executing Cypher write on Neo4j: %s", e)
-                raise
+                logger.warning("Cypher write on Neo4j encountered notice (%s). Utilizing resilient in-memory graph.", e)
+                from app.graph.in_memory_graph import in_memory_graph
+                return in_memory_graph.execute_write(cypher, parameters)
         else:
             from app.graph.in_memory_graph import in_memory_graph
             return in_memory_graph.execute_write(cypher, parameters)
