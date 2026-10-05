@@ -9,7 +9,6 @@ import {
   Database, 
   ArrowRight, 
   Sparkles, 
-  RotateCcw, 
   Cpu
 } from 'lucide-react';
 
@@ -23,42 +22,29 @@ interface ParticleData {
 
 export default function Capsule3DHero() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isBroken, setIsBroken] = useState(true);
   const [titleVisible, setTitleVisible] = useState(false);
 
-  // Animation progress ref for smooth lerping
-  const animProgressRef = useRef(0); // 0 = closed, 1 = fully broken open
-  const targetProgressRef = useRef(1); // target state
+  // Animation progress ref for smooth lerping (0 = closed/intact, 1 = fully broken open)
+  const animProgressRef = useRef(0);
+  const targetProgressRef = useRef(0);
   const mousePosRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
 
   useEffect(() => {
-    // Initial sequence: start closed, then break open smoothly after 300ms
-    const timer = setTimeout(() => {
+    // Initial sequence: starts closed and intact, then slowly breaks open
+    const breakTimer = setTimeout(() => {
       targetProgressRef.current = 1;
-      setIsBroken(true);
-    }, 300);
+    }, 450);
 
+    // Synchronize title emergence as capsule halves glide open
     const titleTimer = setTimeout(() => {
       setTitleVisible(true);
-    }, 650);
+    }, 1200);
 
     return () => {
-      clearTimeout(timer);
+      clearTimeout(breakTimer);
       clearTimeout(titleTimer);
     };
   }, []);
-
-  const toggleBreak = () => {
-    if (targetProgressRef.current > 0.5) {
-      targetProgressRef.current = 0;
-      setIsBroken(false);
-      setTitleVisible(false);
-    } else {
-      targetProgressRef.current = 1;
-      setIsBroken(true);
-      setTimeout(() => setTitleVisible(true), 400);
-    }
-  };
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -303,9 +289,9 @@ export default function Capsule3DHero() {
       const delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
 
-      // Smooth lerp progress toward target
+      // Smooth lerp progress toward target (slow, elegant rupture)
       const diff = targetProgressRef.current - animProgressRef.current;
-      animProgressRef.current += diff * (delta * 4.5);
+      animProgressRef.current += diff * (delta * 1.6);
 
       const p = animProgressRef.current;
 
@@ -404,18 +390,6 @@ export default function Capsule3DHero() {
         ref={containerRef} 
         className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing z-10"
       />
-
-      {/* Floating Interactive Controls (Top Right) */}
-      <div className="absolute top-6 right-6 sm:right-10 z-30 flex items-center space-x-2">
-        <button
-          onClick={toggleBreak}
-          className="inline-flex items-center space-x-1.5 rounded-lg bg-surface-raised/90 hover:bg-surface-overlay border border-surface-border px-3.5 py-2 text-xs font-mono font-medium text-gray-300 hover:text-white transition-all shadow-specular backdrop-blur-md"
-          title="Toggle Capsule Rupture Physics"
-        >
-          <RotateCcw className={`h-3.5 w-3.5 text-gray-300 transition-transform duration-500 ${isBroken ? 'rotate-180' : ''}`} />
-          <span>{isBroken ? 'Reassemble Capsule' : 'Rupture Capsule'}</span>
-        </button>
-      </div>
 
       {/* Emerged Title & Hero Content Overlay (Synchronized with Capsule Break) */}
       <div 
