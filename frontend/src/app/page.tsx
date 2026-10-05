@@ -5,8 +5,7 @@ import Capsule3DHero from '@/components/Capsule3DHero';
 
 export default function HomePage() {
   return (
-    <div className="mx-auto max-w-7xl px-3 py-4 sm:px-6 lg:px-8">
-      {/* Pristine 3D Capsule Breaking Hero Experience */}
+    <div className="w-full min-h-[calc(100vh-3.5rem)] overflow-hidden bg-background">
       <Capsule3DHero />
     </div>
   );
