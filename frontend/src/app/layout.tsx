@@ -29,7 +29,7 @@ export default function RootLayout({
             <div className="flex items-center space-x-3">
               <span>DrugCopilot &copy; {new Date().getFullYear()}</span>
               <span>•</span>
-              <span className="text-gray-400">Neo4j AuraDB Cloud + Gemini 2.5 Flash</span>
+              <span className="text-gray-400">Computational Biomedical Knowledge Graph</span>
             </div>
 
             <div className="flex items-center space-x-4">

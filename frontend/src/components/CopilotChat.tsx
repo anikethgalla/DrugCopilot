@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Sparkles, Loader2, CornerDownLeft } from 'lucide-react';
+import { Bot, User, Sparkles, Loader2, CornerDownLeft } from 'lucide-react';
 import { ChatMessage, RepurposingCandidate, SubgraphResponse } from '@/lib/types';
 import { sendCopilotChat } from '@/lib/api';
 
@@ -29,7 +29,7 @@ export default function CopilotChat({
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content: "Welcome to **DrugCopilot**. I am connected to your live **Neo4j AuraDB** graph with real-world datasets (ChEMBL, Open Targets, UniProt, PubChem, ClinicalTrials.gov, PubMed).\n\nAsk any drug repurposing or target pharmacology question, and I will extract verifiable biological chains."
+      content: "Welcome to **DrugCopilot**. I am connected to the live computational knowledge graph with real-world biomedical datasets (ChEMBL, Open Targets, UniProt, PubChem, ClinicalTrials.gov, PubMed).\n\nAsk any drug repurposing or target pharmacology question, and I will extract verifiable biological chains."
     }
   ]);
   const [input, setInput] = useState(initialQuery || '');
@@ -55,7 +55,7 @@ export default function CopilotChat({
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setLoading(true);
-    setToolStatus("Querying Neo4j AuraDB & biomedical APIs...");
+    setToolStatus("Querying biomedical knowledge graph & APIs...");
 
     try {
       const response = await sendCopilotChat(query, messages);
@@ -107,7 +107,7 @@ export default function CopilotChat({
           <span className="text-xs font-semibold text-white">Biomedical Reasoning Agent</span>
         </div>
         <span className="rounded bg-background border border-surface-border px-1.5 py-0.2 text-[10px] font-mono text-gray-400">
-          Gemini 2.5 Flash
+          Reasoning Model
         </span>
       </div>
 
@@ -151,7 +151,7 @@ export default function CopilotChat({
             </div>
             <div className="flex items-center space-x-2 rounded-xl bg-surface-raised border border-surface-border px-3 py-2 text-xs text-gray-300 shadow-specular">
               <Loader2 className="h-3.5 w-3.5 animate-spin text-white" />
-              <span>{toolStatus || "Traversing AuraDB knowledge graph..."}</span>
+              <span>{toolStatus || "Traversing knowledge graph..."}</span>
             </div>
           </div>
         )}

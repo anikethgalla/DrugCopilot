@@ -427,7 +427,7 @@ export default function Capsule3DHero() {
         <div className="flex items-center space-x-2">
           <div className="inline-flex items-center space-x-2 rounded-full bg-white/10 border border-white/20 px-3.5 py-1.5 text-xs font-mono text-gray-200 font-medium backdrop-blur-md">
             <Cpu className="h-3.5 w-3.5 animate-pulse text-white" />
-            <span>NEO4J AURADB CLOUD • MULTI-HOP BIOMEDICAL GRAPH</span>
+            <span>MULTI-HOP BIOMEDICAL KNOWLEDGE GRAPH</span>
           </div>
         </div>
 
@@ -470,7 +470,7 @@ export default function Capsule3DHero() {
               className="inline-flex items-center space-x-2 rounded-lg bg-surface-raised/80 hover:bg-surface-overlay border border-surface-border px-5 py-3.5 text-xs sm:text-sm font-medium text-gray-300 hover:text-white transition-all shadow-specular backdrop-blur-md"
             >
               <Database className="h-4 w-4 text-gray-400" />
-              <span>Live AuraDB Status</span>
+              <span>ETL Ingestion Hub</span>
             </Link>
           </div>
         </div>

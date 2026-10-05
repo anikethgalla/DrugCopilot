@@ -41,10 +41,10 @@ export default function AdminPage() {
         <div>
           <h1 className="text-xl font-bold text-white tracking-tight flex items-center space-x-2">
             <Database className="h-5 w-5 text-gray-300" />
-            <span>Biomedical Knowledge Ingestion & AuraDB Control Center</span>
+            <span>Biomedical Knowledge Ingestion & Graph Control Center</span>
           </h1>
           <p className="text-xs text-gray-400 mt-0.5">
-            Monitor Neo4j AuraDB live connection health, node constraints, and execute real-time ETL synchronization.
+            Monitor live connection health, node constraints, and execute real-time ETL synchronization.
           </p>
         </div>
 
@@ -71,10 +71,10 @@ export default function AdminPage() {
         <div className="rounded-xl bg-surface border border-surface-border p-4 space-y-1.5 shadow-card">
           <div className="flex items-center space-x-2 text-xs font-semibold text-gray-200 font-mono">
             <Database className="h-3.5 w-3.5 text-gray-400" />
-            <span>NEO4J AURADB CLOUD</span>
+            <span>GRAPH DATABASE CLOUD</span>
           </div>
           <div className="text-xl font-bold text-white font-mono">
-            {health?.database?.neo4j_live_connected ? 'Connected (Bolt SSL)' : 'Neo4j AuraDB Active'}
+            {health?.database?.neo4j_live_connected ? 'Connected (Bolt SSL)' : 'Graph Database Active'}
           </div>
           <p className="text-[11px] text-gray-400 font-mono">{stats?.total_nodes || 422} nodes • {stats?.total_edges || 434} relationships</p>
         </div>
@@ -104,7 +104,7 @@ export default function AdminPage() {
             Trigger Incremental Ingestion Pipelines
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Query live upstream APIs, resolve canonical IDs, and merge verified edges into AuraDB.
+            Query live upstream APIs, resolve canonical IDs, and merge verified edges into the knowledge graph.
           </p>
         </div>
 
@@ -213,7 +213,7 @@ export default function AdminPage() {
               className="w-full rounded bg-white hover:bg-neutral-200 py-1.5 text-xs font-bold text-black transition-colors flex items-center justify-center space-x-1 shadow-specular-strong"
             >
               <Play className="h-3 w-3 text-black" />
-              <span>{loadingSource === 'bootstrap' ? 'Syncing AuraDB Graph...' : 'Run Full Bootstrap'}</span>
+              <span>{loadingSource === 'bootstrap' ? 'Syncing Knowledge Graph...' : 'Run Full Bootstrap'}</span>
             </button>
           </div>
         </div>
