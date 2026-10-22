@@ -13,6 +13,16 @@ interface GraphVisualizationProps {
   height?: string;
 }
 
+// Monochrome Legend definition
+const LEGEND_ITEMS = [
+  { label: 'Drug', color: '#ffffff', border: '#ffffff' },
+  { label: 'Disease', color: '#18181b', border: '#ffffff' },
+  { label: 'Protein', color: '#d4d4d8', border: '#ffffff' },
+  { label: 'Gene', color: '#71717a', border: 'rgba(255,255,255,0.6)' },
+  { label: 'Pathway', color: '#3f3f46', border: 'rgba(255,255,255,0.4)' },
+  { label: 'Trial', color: '#27272a', border: '#ffffff', dashed: true },
+];
+
 export default function GraphVisualization({
   subgraph,
   onNodeSelect,
@@ -135,109 +145,88 @@ export default function GraphVisualization({
   };
 
   return (
-    <div className="relative w-full h-full rounded-xl bg-canvas-subtle overflow-hidden" style={{ height }}>
+    <div className="relative w-full h-full rounded-xl bg-black overflow-hidden" style={{ height }}>
+      {/* Background Radial Ambiance */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(255,255,255,0.04),transparent_80%)] pointer-events-none" />
+
       {/* Cytoscape Canvas */}
       <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
       {/* Floating Toolbar */}
-      <div className="absolute top-3 right-3 flex items-center space-x-1 bg-surface/95 backdrop-blur-md border border-surface-border rounded-lg p-1 shadow-card z-10">
+      <div className="absolute top-3 right-3 flex items-center space-x-1 rounded-xl bg-zinc-950/90 border border-white/10 p-1.5 shadow-2xl backdrop-blur-xl z-10">
         <select
           value={layoutName}
           onChange={(e) => setLayoutName(e.target.value as any)}
-          className="bg-surface-raised text-[11px] font-mono text-gray-200 border border-surface-border rounded px-2 py-1 focus:outline-none"
+          className="bg-zinc-900 text-[11px] font-mono text-zinc-300 border border-white/10 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-white/40 transition-colors"
         >
           <option value="cose">Force CoSE</option>
           <option value="concentric">Concentric</option>
           <option value="breadthfirst">Hierarchical</option>
           <option value="circle">Circular</option>
         </select>
-        <div className="h-4 w-[1px] bg-surface-border mx-1" />
-        <button
-          onClick={handleZoomIn}
-          title="Zoom In"
-          className="p-1.5 text-gray-400 hover:text-white hover:bg-surface-raised rounded transition-colors"
-        >
-          <ZoomIn className="h-3.5 w-3.5" />
-        </button>
-        <button
-          onClick={handleZoomOut}
-          title="Zoom Out"
-          className="p-1.5 text-gray-400 hover:text-white hover:bg-surface-raised rounded transition-colors"
-        >
-          <ZoomOut className="h-3.5 w-3.5" />
-        </button>
-        <button
-          onClick={handleFit}
-          title="Fit to Screen"
-          className="p-1.5 text-gray-400 hover:text-white hover:bg-surface-raised rounded transition-colors"
-        >
-          <Maximize2 className="h-3.5 w-3.5" />
-        </button>
-        <button
-          onClick={handleRelayout}
-          title="Relayout Graph"
-          className="p-1.5 text-gray-400 hover:text-white hover:bg-surface-raised rounded transition-colors"
-        >
-          <RotateCcw className="h-3.5 w-3.5" />
-        </button>
+        <div className="h-5 w-[1px] bg-white/10 mx-1" />
+        {[
+          { icon: ZoomIn, handler: handleZoomIn, title: 'Zoom In' },
+          { icon: ZoomOut, handler: handleZoomOut, title: 'Zoom Out' },
+          { icon: Maximize2, handler: handleFit, title: 'Fit to Screen' },
+          { icon: RotateCcw, handler: handleRelayout, title: 'Relayout' },
+        ].map(({ icon: Icon, handler, title }) => (
+          <button
+            key={title}
+            onClick={handler}
+            title={title}
+            className="p-1.5 text-zinc-400 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+          >
+            <Icon className="h-3.5 w-3.5" />
+          </button>
+        ))}
       </div>
 
-      {/* Discrete Bottom Legend (Monochrome) */}
-      <div className="absolute bottom-3 left-3 bg-surface/95 backdrop-blur-md border border-surface-border rounded-md px-2.5 py-1.5 text-[10px] font-mono flex items-center space-x-2.5 shadow-card z-10">
-        <div className="flex items-center space-x-1">
-          <span className="w-2 h-2 rounded-full bg-white"></span>
-          <span className="text-gray-300">Drug</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <span className="w-2 h-2 rounded-full bg-neutral-300"></span>
-          <span className="text-gray-300">Disease</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <span className="w-2 h-2 rounded-full bg-neutral-400"></span>
-          <span className="text-gray-300">Protein</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <span className="w-2 h-2 rounded-full bg-neutral-500"></span>
-          <span className="text-gray-300">Gene</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <span className="w-2 h-2 rounded-full bg-neutral-400"></span>
-          <span className="text-gray-300">Pathway</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <span className="w-2 h-2 rounded-full bg-neutral-500"></span>
-          <span className="text-gray-300">Trial</span>
-        </div>
+      {/* Bottom Legend with Monochrome Entity Dots */}
+      <div className="absolute bottom-3 left-3 rounded-xl bg-zinc-950/90 border border-white/10 px-3 py-2 text-[10px] font-mono flex items-center space-x-3 shadow-2xl backdrop-blur-xl z-10">
+        {LEGEND_ITEMS.map((item) => (
+          <div key={item.label} className="flex items-center space-x-1.5">
+            <span 
+              className="w-2.5 h-2.5 rounded-full"
+              style={{ 
+                backgroundColor: item.color, 
+                border: `1px ${item.dashed ? 'dashed' : 'solid'} ${item.border}`,
+                boxShadow: '0 0 6px rgba(255,255,255,0.2)'
+              }}
+            />
+            <span className="text-zinc-400">{item.label}</span>
+          </div>
+        ))}
       </div>
 
-      {/* Edge Provenance Popover (Monochrome) */}
+      {/* Edge Provenance Popover */}
       {selectedEdgeData && (
-        <div className="absolute top-14 left-3 max-w-sm bg-surface/95 backdrop-blur-md border border-white/20 rounded-xl p-3 shadow-card z-20 text-xs">
-          <div className="flex items-center justify-between pb-1.5 border-b border-surface-border">
-            <span className="font-semibold text-white">Relationship Provenance</span>
-            <div className="flex items-center space-x-1.5">
-              <span className="rounded bg-white/10 px-1.5 py-0.2 text-white font-mono text-[10px] border border-white/20">
+        <div className="absolute top-14 left-3 max-w-sm rounded-2xl bg-zinc-950/95 border border-white/15 p-4 shadow-2xl backdrop-blur-2xl z-20 text-xs animate-fade-in">
+          <div className="flex items-center justify-between pb-2 border-b border-white/10">
+            <span className="font-semibold text-white text-sm">Relationship Provenance</span>
+            <div className="flex items-center space-x-2">
+              <span className="rounded-full bg-white text-black font-mono font-bold text-[10px] px-2 py-0.5">
                 {selectedEdgeData.type}
               </span>
-              <button onClick={() => setSelectedEdgeData(null)} className="text-gray-400 hover:text-white">
+              <button onClick={() => setSelectedEdgeData(null)} className="text-zinc-400 hover:text-white transition-colors">
                 <X className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
-          <div className="mt-2 space-y-1 text-gray-300 text-[11px] font-sans">
-            <p><strong>Source Provider:</strong> {selectedEdgeData.provenance_source || selectedEdgeData.source_db || selectedEdgeData.source || 'Curated Database'}</p>
-            {selectedEdgeData.source_id && <p className="font-mono"><strong>Source ID:</strong> <code className="text-white">{selectedEdgeData.source_id}</code></p>}
-            {selectedEdgeData.confidence !== undefined && <p className="font-mono"><strong>Confidence:</strong> {Math.round(selectedEdgeData.confidence * 100)}%</p>}
-            {selectedEdgeData.mechanism && <p><strong>Mechanism:</strong> {selectedEdgeData.mechanism}</p>}
+          <div className="mt-2.5 space-y-1.5 text-zinc-300 text-[12px] font-sans">
+            <p><strong className="text-white">Source Provider:</strong> {selectedEdgeData.provenance_source || selectedEdgeData.source_db || selectedEdgeData.source || 'Curated Database'}</p>
+            {selectedEdgeData.source_id && <p className="font-mono"><strong className="text-white">Source ID:</strong> <code className="text-zinc-200">{selectedEdgeData.source_id}</code></p>}
+            {selectedEdgeData.confidence !== undefined && <p className="font-mono"><strong className="text-white">Confidence:</strong> <span className="text-white font-bold">{Math.round(selectedEdgeData.confidence * 100)}%</span></p>}
+            {selectedEdgeData.mechanism && <p><strong className="text-white">Mechanism:</strong> {selectedEdgeData.mechanism}</p>}
             {selectedEdgeData.source_url && (
               <a
                 href={selectedEdgeData.source_url}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center space-x-1 text-gray-300 hover:text-white pt-1 font-mono text-[10px] transition-colors"
+                className="inline-flex items-center space-x-1.5 text-white hover:underline pt-1 font-mono text-[11px] transition-colors"
               >
-                <span>Inspect Upstream Source Record</span>
-                <ExternalLink className="h-2.5 w-2.5 text-gray-400" />
+                <span>Inspect Upstream Source</span>
+                <ExternalLink className="h-3 w-3" />
               </a>
             )}
           </div>

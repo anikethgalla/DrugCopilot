@@ -12,13 +12,11 @@ import {
   Database, 
   Menu, 
   X, 
-  Sparkles,
-  ShieldCheck,
-  UserCheck,
-  LogIn,
+  ArrowUpRight,
   LogOut,
   ChevronDown,
-  Layers
+  Layers,
+  LogIn
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/auth-context';
@@ -28,116 +26,120 @@ export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
-  const { user, role, isAuthenticated, logout, switchPortal, portalMode } = useAuth();
+  const { user, role, isAuthenticated, logout, switchPortal } = useAuth();
 
-  // Dynamic Navigation Items based on RBAC
+  // Navigation Items
   const baseNavItems = [
-    { href: '/copilot', label: 'AI Copilot', icon: Bot, badge: 'Agent' },
-    { href: '/explore', label: 'Graph Explorer', icon: Network },
-    { href: '/drugs', label: 'Drugs', icon: Pill },
-    { href: '/diseases', label: 'Diseases', icon: Dna },
-    { href: '/trials', label: 'Clinical Trials', icon: FlaskConical },
+    { href: '/', label: 'Overview' },
+    { href: '/copilot', label: 'Copilot', badge: 'AI' },
+    { href: '/explore', label: 'Graph' },
+    { href: '/drugs', label: 'Molecules' },
+    { href: '/diseases', label: 'Diseases' },
+    { href: '/trials', label: 'Trials' },
   ];
 
-  const adminNavItem = { href: '/admin', label: 'ETL & Ingestion', icon: Database, badge: 'Admin' };
-
+  const adminNavItem = { href: '/admin', label: 'ETL Ingestion', badge: 'Admin' };
   const navItems = role === 'admin' ? [...baseNavItems, adminNavItem] : baseNavItems;
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-surface-border bg-background/95 backdrop-blur-md">
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 w-full border-b border-white/[0.08] bg-black/70 backdrop-blur-2xl">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         
-        {/* Logo & Product Identity */}
-        <div className="flex items-center space-x-6">
-          <Link href="/" className="flex items-center space-x-2.5 group">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-surface-raised border border-surface-border text-white group-hover:border-white/40 transition-colors shadow-specular">
-              <Network className="h-4 w-4" />
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-semibold tracking-tight text-white">DrugCopilot</span>
-              {role === 'admin' ? (
-                <span className="rounded bg-white/10 border border-white/20 px-1.5 py-0.2 text-[9px] font-mono text-gray-200 font-bold uppercase tracking-wider">
-                  ADMIN
-                </span>
-              ) : isAuthenticated ? (
-                <span className="rounded bg-white/5 border border-white/10 px-1.5 py-0.2 text-[9px] font-mono text-gray-400 font-medium uppercase tracking-wider">
-                  RESEARCHER
-                </span>
-              ) : null}
-            </div>
-          </Link>
+        {/* Brand Logo & Name */}
+        <Link href="/" className="flex items-center space-x-3 group">
+          <div className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 border border-white/20 group-hover:border-white/50 transition-all duration-300 shadow-sm">
+            <Pill className="h-4 w-4 text-white transform group-hover:rotate-45 transition-transform duration-300" />
+            <span className="absolute -top-1 -right-1 flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white/60 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+            </span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-base font-semibold tracking-tight text-white">
+              Drug<span className="text-zinc-400 font-normal">Copilot</span>
+            </span>
+            {role === 'admin' ? (
+              <span className="rounded-full bg-white/10 border border-white/20 px-2 py-0.5 text-[9px] font-mono text-zinc-300 font-medium uppercase tracking-wider">
+                ADMIN
+              </span>
+            ) : isAuthenticated ? (
+              <span className="rounded-full bg-zinc-900 border border-zinc-700 px-2 py-0.5 text-[9px] font-mono text-zinc-400 font-medium uppercase tracking-wider">
+                RESEARCH
+              </span>
+            ) : null}
+          </div>
+        </Link>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center space-x-1">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = pathname === item.href || (item.href !== '/' && pathname?.startsWith(item.href));
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center space-x-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors",
-                    isActive 
-                      ? "bg-surface-raised text-white border border-surface-border shadow-specular font-semibold" 
-                      : "text-gray-400 hover:text-white hover:bg-surface-raised/60"
-                  )}
-                >
-                  <Icon className={cn("h-3.5 w-3.5", isActive ? "text-white" : "text-gray-400")} />
-                  <span>{item.label}</span>
-                  {item.badge && (
-                    <span className={cn(
-                      "rounded px-1 py-0.2 text-[9px] font-mono font-semibold",
-                      item.badge === 'Admin' ? "bg-white/20 text-white" : "bg-white/10 text-gray-200"
-                    )}>
-                      {item.badge}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
+        {/* Center Floating Pill Navigation (Inspired by Pinterest Reference) */}
+        <nav className="hidden md:flex items-center space-x-1 rounded-full bg-zinc-900/60 border border-white/10 px-2 py-1 shadow-inner backdrop-blur-xl">
+          {navItems.map((item) => {
+            const isActive = item.href === '/' 
+              ? pathname === '/' 
+              : pathname === item.href || pathname?.startsWith(item.href);
 
-        {/* Right Section: Portal Switcher, User Menu & Action */}
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "relative flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200",
+                  isActive 
+                    ? "bg-white text-black shadow-sm font-semibold" 
+                    : "text-zinc-400 hover:text-white hover:bg-white/[0.06]"
+                )}
+              >
+                <span>{item.label}</span>
+                {item.badge && (
+                  <span className={cn(
+                    "rounded-full px-1.5 py-0.2 text-[8px] font-mono font-medium",
+                    isActive ? "bg-black/10 text-black" : "bg-white/10 text-zinc-300"
+                  )}>
+                    {item.badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Right Section: Auth & Primary Action Button */}
         <div className="flex items-center space-x-3">
           
-          {/* Admin Portal Quick Switcher (Visible only if Admin) */}
+          {/* Quick Portal Switcher (Admin only) */}
           {role === 'admin' && (
             <button
               onClick={() => switchPortal(pathname.startsWith('/admin') ? 'user' : 'admin')}
-              className="hidden lg:inline-flex items-center space-x-1.5 rounded-md bg-surface-raised hover:bg-surface-overlay border border-surface-border px-2.5 py-1.5 text-xs font-mono text-gray-300 hover:text-white transition-all shadow-specular"
-              title="Toggle Portal View"
+              className="hidden lg:inline-flex items-center space-x-1.5 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-white/10 px-3 py-1.5 text-xs font-mono text-zinc-300 hover:text-white transition-all"
             >
-              <Layers className="h-3.5 w-3.5 text-gray-300" />
-              <span>{pathname.startsWith('/admin') ? 'View Researcher Portal' : 'View Admin Hub'}</span>
+              <Layers className="h-3.5 w-3.5 text-zinc-400" />
+              <span>{pathname.startsWith('/admin') ? 'Researcher' : 'Admin Hub'}</span>
             </button>
           )}
 
-          {/* User Auth Pill / Dropdown */}
+          {/* User Auth Info / Dropdown */}
           {isAuthenticated && user ? (
             <div className="relative">
               <button
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="inline-flex items-center space-x-2 rounded-md bg-surface-raised hover:bg-surface-overlay border border-surface-border px-2.5 py-1.5 text-xs font-mono text-gray-200 transition-all shadow-specular"
+                className="inline-flex items-center space-x-2 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-white/10 px-3 py-1.5 text-xs font-mono text-zinc-200 transition-all"
               >
-                <div className="h-4 w-4 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-[9px] font-bold text-white">
+                <div className="h-5 w-5 rounded-full bg-white text-black flex items-center justify-center text-[9px] font-bold">
                   {user.role === 'admin' ? 'A' : 'R'}
                 </div>
-                <span className="max-w-[100px] truncate hidden sm:inline">{user.name.split(' ')[0]}</span>
-                <ChevronDown className="h-3 w-3 text-gray-400" />
+                <span className="max-w-[80px] truncate hidden sm:inline">{user.name.split(' ')[0]}</span>
+                <ChevronDown className="h-3 w-3 text-zinc-400" />
               </button>
 
               {userDropdownOpen && (
                 <div 
-                  className="absolute right-0 mt-2 w-56 rounded-xl border border-surface-border bg-surface-raised p-2 shadow-specular-strong z-50 space-y-1"
+                  className="absolute right-0 mt-2 w-56 rounded-2xl border border-white/10 bg-zinc-950/95 backdrop-blur-2xl p-2 shadow-2xl z-50 space-y-1"
                   onMouseLeave={() => setUserDropdownOpen(false)}
                 >
-                  <div className="px-2.5 py-2 border-b border-surface-border">
+                  <div className="px-3 py-2 border-b border-white/10">
                     <div className="text-xs font-semibold text-white">{user.name}</div>
-                    <div className="text-[11px] font-mono text-gray-400 truncate">{user.email}</div>
-                    <div className="mt-1 inline-flex items-center space-x-1 rounded bg-white/10 px-1.5 py-0.2 text-[9px] font-mono text-gray-200 uppercase font-bold">
-                      <span>{user.role} role</span>
+                    <div className="text-[11px] font-mono text-zinc-400 truncate">{user.email}</div>
+                    <div className="mt-1 inline-flex items-center rounded-full bg-white/10 px-2 py-0.5 text-[9px] font-mono text-zinc-200 uppercase font-bold">
+                      {user.role} role
                     </div>
                   </div>
 
@@ -145,9 +147,9 @@ export default function Navigation() {
                     <Link
                       href="/admin"
                       onClick={() => setUserDropdownOpen(false)}
-                      className="flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-gray-200 hover:bg-surface-overlay hover:text-white transition-colors"
+                      className="flex items-center space-x-2 px-3 py-2 rounded-xl text-xs font-medium text-zinc-300 hover:bg-white/10 hover:text-white transition-colors"
                     >
-                      <Database className="h-3.5 w-3.5 text-gray-400" />
+                      <Database className="h-3.5 w-3.5 text-zinc-400" />
                       <span>Admin Command Center</span>
                     </Link>
                   )}
@@ -155,9 +157,9 @@ export default function Navigation() {
                   <Link
                     href="/copilot"
                     onClick={() => setUserDropdownOpen(false)}
-                    className="flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-gray-200 hover:bg-surface-overlay hover:text-white transition-colors"
+                    className="flex items-center space-x-2 px-3 py-2 rounded-xl text-xs font-medium text-zinc-300 hover:bg-white/10 hover:text-white transition-colors"
                   >
-                    <Bot className="h-3.5 w-3.5 text-gray-400" />
+                    <Bot className="h-3.5 w-3.5 text-zinc-400" />
                     <span>Researcher Copilot</span>
                   </Link>
 
@@ -166,9 +168,9 @@ export default function Navigation() {
                       setUserDropdownOpen(false);
                       logout();
                     }}
-                    className="w-full flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-red-400 hover:bg-red-950/30 transition-colors"
+                    className="w-full flex items-center space-x-2 px-3 py-2 rounded-xl text-xs font-medium text-zinc-400 hover:bg-white/5 hover:text-white transition-colors"
                   >
-                    <LogOut className="h-3.5 w-3.5 text-red-400" />
+                    <LogOut className="h-3.5 w-3.5" />
                     <span>Sign Out</span>
                   </button>
                 </div>
@@ -177,27 +179,26 @@ export default function Navigation() {
           ) : (
             <Link
               href="/login"
-              className="inline-flex items-center space-x-1.5 rounded-md bg-surface-raised hover:bg-surface-overlay border border-surface-border px-3 py-1.5 text-xs font-medium text-gray-300 hover:text-white transition-all shadow-specular"
+              className="inline-flex items-center space-x-1.5 rounded-full bg-zinc-900/80 hover:bg-zinc-800 border border-white/10 px-3.5 py-1.5 text-xs font-medium text-zinc-300 hover:text-white transition-all"
             >
-              <LogIn className="h-3.5 w-3.5 text-gray-400" />
+              <LogIn className="h-3.5 w-3.5 text-zinc-400" />
               <span>Sign In</span>
             </Link>
           )}
 
-          {/* Quick Launch Copilot */}
+          {/* Primary Action Button — Pure White Pill with Black Text (Like Pinterest Reference) */}
           <Link
             href="/copilot"
-            className="inline-flex items-center space-x-1.5 rounded-md bg-white hover:bg-neutral-200 text-black px-3 py-1.5 text-xs font-bold transition-all shadow-specular-strong"
+            className="group inline-flex items-center space-x-2 rounded-full bg-white hover:bg-zinc-200 text-black px-4 py-1.5 text-xs font-semibold shadow-specular transition-all duration-200 transform hover:-translate-y-0.5"
           >
-            <Sparkles className="h-3.5 w-3.5 text-black" />
-            <span className="hidden sm:inline">Launch Copilot</span>
-            <span className="sm:hidden">Copilot</span>
+            <span>Launch Copilot</span>
+            <ArrowUpRight className="h-3.5 w-3.5 text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </Link>
 
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-1.5 text-gray-400 hover:text-white rounded-md hover:bg-surface-raised"
+            className="md:hidden p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -206,26 +207,22 @@ export default function Navigation() {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-surface-border bg-surface px-4 py-3 space-y-1">
+        <div className="md:hidden border-b border-white/10 bg-black/95 backdrop-blur-2xl px-4 py-4 space-y-2">
           {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href;
+            const isActive = item.href === '/' ? pathname === '/' : pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
                 className={cn(
-                  "flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium",
-                  isActive ? "bg-surface-raised text-white font-bold" : "text-gray-300 hover:bg-surface-raised"
+                  "flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-colors",
+                  isActive ? "bg-white text-black font-semibold" : "text-zinc-400 hover:bg-white/5 hover:text-white"
                 )}
               >
-                <div className="flex items-center space-x-2.5">
-                  <Icon className="h-4 w-4 text-gray-300" />
-                  <span>{item.label}</span>
-                </div>
+                <span>{item.label}</span>
                 {item.badge && (
-                  <span className="rounded bg-white/10 border border-white/20 px-1.5 py-0.5 text-[10px] text-gray-200">
+                  <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] text-zinc-300">
                     {item.badge}
                   </span>
                 )}
@@ -233,14 +230,14 @@ export default function Navigation() {
             );
           })}
 
-          <div className="pt-2 border-t border-surface-border">
+          <div className="pt-2 border-t border-white/10">
             {isAuthenticated ? (
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
                   logout();
                 }}
-                className="w-full flex items-center space-x-2 px-3 py-2 rounded-md text-xs font-medium text-red-400 hover:bg-surface-raised"
+                className="w-full flex items-center space-x-2 px-3.5 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:bg-white/5 hover:text-white"
               >
                 <LogOut className="h-4 w-4" />
                 <span>Sign Out ({user?.email})</span>
@@ -249,10 +246,10 @@ export default function Navigation() {
               <Link
                 href="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center space-x-2 px-3 py-2 rounded-md text-xs font-medium text-white hover:bg-surface-raised"
+                className="w-full flex items-center space-x-2 px-3.5 py-2.5 rounded-xl text-xs font-medium text-zinc-300 hover:bg-white/5 hover:text-white"
               >
                 <LogIn className="h-4 w-4" />
-                <span>Sign In / Switch Portal</span>
+                <span>Sign In</span>
               </Link>
             )}
           </div>

@@ -41,8 +41,8 @@ function CopilotContent() {
   };
 
   return (
-    <div className="h-[calc(100vh-5.5rem)] p-3 lg:p-4 overflow-hidden">
-      <div className="grid h-full grid-cols-1 lg:grid-cols-12 gap-3">
+    <div className="h-[calc(100vh-8.5rem)] p-3 lg:p-4 bg-black overflow-hidden select-none">
+      <div className="grid h-full grid-cols-1 lg:grid-cols-12 gap-3.5">
         
         {/* LEFT PANEL: Conversational Agent (4 Cols) */}
         <div className="lg:col-span-4 h-full min-h-[400px]">
@@ -55,42 +55,42 @@ function CopilotContent() {
         </div>
 
         {/* CENTER PANEL: Interactive Graph Viewport & Candidate Matrix (5 Cols) */}
-        <div className="lg:col-span-5 h-full flex flex-col bg-surface border border-surface-border rounded-xl overflow-hidden shadow-card">
+        <div className="lg:col-span-5 h-full flex flex-col rounded-2xl bg-zinc-950/80 border border-white/10 overflow-hidden shadow-2xl backdrop-blur-xl">
           
           {/* Viewport Segmented Control */}
-          <div className="flex items-center justify-between border-b border-surface-border px-3.5 py-2 bg-surface-raised">
-            <div className="flex items-center space-x-1 bg-background p-0.5 rounded-lg border border-surface-border">
+          <div className="flex items-center justify-between border-b border-white/10 px-4 py-2.5 bg-black/40">
+            <div className="flex items-center space-x-1 bg-zinc-900/80 p-1 rounded-xl border border-white/10">
               <button
                 onClick={() => setActiveTab('graph')}
-                className={`flex items-center space-x-1.5 px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
+                className={`flex items-center space-x-1.5 px-3 py-1 text-xs rounded-lg transition-all duration-200 ${
                   activeTab === 'graph' 
-                    ? 'bg-surface-raised text-white border border-surface-border shadow-specular' 
-                    : 'text-gray-400 hover:text-white'
+                    ? 'bg-white text-black font-bold shadow-sm' 
+                    : 'text-zinc-400 hover:text-white'
                 }`}
               >
-                <Network className="h-3.5 w-3.5 text-gray-300" />
+                <Network className={`h-3.5 w-3.5 ${activeTab === 'graph' ? 'text-black' : 'text-zinc-400'}`} />
                 <span>Knowledge Graph</span>
               </button>
               <button
                 onClick={() => setActiveTab('candidates')}
-                className={`flex items-center space-x-1.5 px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
+                className={`flex items-center space-x-1.5 px-3 py-1 text-xs rounded-lg transition-all duration-200 ${
                   activeTab === 'candidates' 
-                    ? 'bg-surface-raised text-white border border-surface-border shadow-specular' 
-                    : 'text-gray-400 hover:text-white'
+                    ? 'bg-white text-black font-bold shadow-sm' 
+                    : 'text-zinc-400 hover:text-white'
                 }`}
               >
-                <ListOrdered className="h-3.5 w-3.5 text-gray-300" />
+                <ListOrdered className={`h-3.5 w-3.5 ${activeTab === 'candidates' ? 'text-black' : 'text-zinc-400'}`} />
                 <span>Candidates ({candidates.length})</span>
               </button>
             </div>
 
-            <div className="text-[11px] font-mono text-gray-400">
-              {subgraph?.nodes?.length || 0} nodes • {subgraph?.edges?.length || 0} edges
+            <div className="text-[11px] font-mono text-zinc-400">
+              <span className="text-white font-bold">{subgraph?.nodes?.length || 0}</span> nodes • <span className="text-white font-bold">{subgraph?.edges?.length || 0}</span> edges
             </div>
           </div>
 
           {/* Main Content Area */}
-          <div className="flex-1 p-2.5 overflow-y-auto">
+          <div className="flex-1 p-3 overflow-y-auto">
             {activeTab === 'graph' ? (
               <div className="h-full">
                 <GraphVisualization
@@ -100,12 +100,17 @@ function CopilotContent() {
                 />
               </div>
             ) : (
-              <div className="space-y-2.5">
+              <div className="space-y-3">
                 {candidates.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center p-12 text-center text-gray-500 space-y-2">
-                    <Sparkles className="h-8 w-8 text-gray-600 mb-1" />
-                    <p className="text-xs text-gray-400">No candidates generated yet.</p>
-                    <p className="text-[11px] text-gray-500 max-w-xs">Ask a question in the AI Copilot on the left to extract drug repurposing hypotheses.</p>
+                  <div className="flex flex-col items-center justify-center p-16 text-center space-y-3">
+                    <div className="relative">
+                      <Sparkles className="h-10 w-10 text-white/40" />
+                      <div className="absolute inset-0 animate-ping">
+                        <Sparkles className="h-10 w-10 text-white/20" />
+                      </div>
+                    </div>
+                    <p className="text-sm text-zinc-300 font-medium">No candidates generated yet</p>
+                    <p className="text-xs text-zinc-500 max-w-xs leading-relaxed">Ask a question in the AI Copilot to extract drug repurposing hypotheses from the biomedical knowledge graph.</p>
                   </div>
                 ) : (
                   candidates.map((cand, idx) => (
@@ -123,13 +128,15 @@ function CopilotContent() {
         </div>
 
         {/* RIGHT PANEL: Evidence & Provenance Inspector (3 Cols) */}
-        <div className="lg:col-span-3 h-full bg-surface border border-surface-border rounded-xl overflow-hidden flex flex-col shadow-card">
-          <div className="border-b border-surface-border px-3.5 py-2.5 bg-surface-raised flex items-center justify-between">
-            <div className="flex items-center space-x-1.5">
-              <FileSearch className="h-3.5 w-3.5 text-gray-300" />
+        <div className="lg:col-span-3 h-full rounded-2xl bg-zinc-950/80 border border-white/10 overflow-hidden flex flex-col shadow-2xl backdrop-blur-xl">
+          <div className="border-b border-white/10 px-4 py-3 bg-black/40 flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/10 border border-white/15">
+                <FileSearch className="h-3.5 w-3.5 text-white" />
+              </div>
               <h3 className="text-xs font-semibold text-white">Evidence Inspector</h3>
             </div>
-            <span className="text-[10px] font-mono text-gray-400">W3C PROV-DM</span>
+            <span className="text-[10px] font-mono text-zinc-400 bg-zinc-900 px-2 py-0.5 rounded-full border border-white/10">W3C PROV-DM</span>
           </div>
           <div className="flex-1 overflow-hidden">
             <EvidenceDrawer candidate={selectedCandidate} />
@@ -144,8 +151,8 @@ function CopilotContent() {
 export default function CopilotPage() {
   return (
     <Suspense fallback={
-      <div className="h-[calc(100vh-5.5rem)] flex items-center justify-center space-x-2 text-xs text-gray-400 font-mono">
-        <Loader2 className="h-4 w-4 animate-spin text-white" />
+      <div className="h-[calc(100vh-4rem)] flex items-center justify-center space-x-3 text-sm text-zinc-400 font-mono">
+        <Loader2 className="h-5 w-5 animate-spin text-white" />
         <span>Loading Copilot workspace...</span>
       </div>
     }>
