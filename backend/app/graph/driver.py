@@ -11,27 +11,47 @@ class Neo4jConnectionManager:
     """Manages async connection to the Neo4j graph database."""
     _driver: Optional[AsyncDriver] = None
     _in_memory_fallback: bool = False
+    _last_connect_attempt: float = 0.0
+    _connect_cooldown_seconds: float = 60.0
+    _has_warned_unreachable: bool = False
 
     @classmethod
     async def get_driver(cls) -> Optional[AsyncDriver]:
-        if cls._driver is None:
-            try:
-                cls._driver = AsyncGraphDatabase.driver(
+        if cls._driver is not None:
+            return cls._driver
+
+        now = time.time()
+        # Prevent hammering DNS resolution and spamming terminal logs when Neo4j is offline/paused
+        if now - cls._last_connect_attempt < cls._connect_cooldown_seconds:
+            return None
+
+        cls._last_connect_attempt = now
+        try:
+            cls._driver = AsyncGraphDatabase.driver(
+                settings.NEO4J_URI,
+                auth=(settings.NEO4J_USERNAME, settings.NEO4J_PASSWORD),
+                max_connection_lifetime=settings.NEO4J_MAX_CONNECTION_LIFETIME,
+                max_connection_pool_size=settings.NEO4J_MAX_CONNECTION_POOL_SIZE,
+            )
+            await cls._driver.verify_connectivity()
+            logger.info("Successfully connected to Neo4j database at %s", settings.NEO4J_URI)
+            cls._has_warned_unreachable = False
+        except Exception as e:
+            if not cls._has_warned_unreachable:
+                logger.warning(
+                    "Neo4j is not reachable at %s (%s). Falling back to resilient in-memory graph mode (NetworkX).",
                     settings.NEO4J_URI,
-                    auth=(settings.NEO4J_USERNAME, settings.NEO4J_PASSWORD),
-                    max_connection_lifetime=settings.NEO4J_MAX_CONNECTION_LIFETIME,
-                    max_connection_pool_size=settings.NEO4J_MAX_CONNECTION_POOL_SIZE,
+                    e,
                 )
-                await cls._driver.verify_connectivity()
-                logger.info("Successfully connected to Neo4j database at %s", settings.NEO4J_URI)
-            except Exception as e:
-                logger.warning("Neo4j is not reachable at %s (%s). Falling back to resilient graph memory mode.", settings.NEO4J_URI, e)
-                if cls._driver:
-                    try:
-                        await cls._driver.close()
-                    except Exception:
-                        pass
-                cls._driver = None
+                cls._has_warned_unreachable = True
+            else:
+                logger.debug("Neo4j reconnect skipped (cooldown active): %s", e)
+            if cls._driver:
+                try:
+                    await cls._driver.close()
+                except Exception:
+                    pass
+            cls._driver = None
         return cls._driver
 
     @classmethod
