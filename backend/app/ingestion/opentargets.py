@@ -171,6 +171,14 @@ class OpenTargetsIngestor:
                     "is_approved": is_approved,
                     "max_clinical_phase": phase
                 }
+                treats_props = {
+                    "source": "OpenTargets",
+                    "max_clinical_stage": str(max_stage) if max_stage is not None else "UNKNOWN",
+                    "phase": phase,
+                    "is_approved": is_approved
+                }
+                in_memory_graph.merge_node("Drug", drug_chembl_id, drug_props)
+                in_memory_graph.merge_edge(drug_chembl_id, disease_id, "TREATS", treats_props)
                 drug_cypher = """
                 MERGE (d:Drug {canonical_id: $drug_id})
                 ON CREATE SET d += $props

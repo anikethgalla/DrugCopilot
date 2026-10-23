@@ -36,7 +36,29 @@ async def get_entity_subgraph(
     max_nodes: int = Query(default=50, ge=5, le=150)
 ) -> SubgraphResponse:
     """Retrieve an interactive ego-subgraph surrounding an entity for Cytoscape visualization."""
-    subgraph = in_memory_graph.get_subgraph(id, max_depth=max_depth, max_nodes=max_nodes)
+    from app.ingestion.live import LiveDataSyncService
+
+    target_id = id
+    # Resolve disease or drug name/typo and dynamically hydrate live biomedical data
+    if entity_type.lower() in ("disease", "condition"):
+        try:
+            d_meta = await LiveDataSyncService.ensure_disease_knowledge(id)
+            if d_meta and d_meta.get("canonical_id"):
+                target_id = d_meta["canonical_id"]
+        except Exception:
+            pass
+    elif entity_type.lower() in ("drug", "compound"):
+        try:
+            drug_meta = await LiveDataSyncService.ensure_drug_knowledge(id)
+            if drug_meta and drug_meta.get("canonical_id"):
+                target_id = drug_meta["canonical_id"]
+        except Exception:
+            pass
+
+    subgraph = in_memory_graph.get_subgraph(target_id, max_depth=max_depth, max_nodes=max_nodes)
+    if not subgraph.get("nodes") and target_id != id:
+        subgraph = in_memory_graph.get_subgraph(id, max_depth=max_depth, max_nodes=max_nodes)
+
     return SubgraphResponse(**subgraph)
 
 

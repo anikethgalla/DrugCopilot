@@ -2,6 +2,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Bot, User, Sparkles, Loader2, CornerDownLeft } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { ChatMessage, RepurposingCandidate, SubgraphResponse } from '@/lib/types';
 import { sendCopilotChat } from '@/lib/api';
 
@@ -132,9 +134,43 @@ export default function CopilotChat({
                   : 'bg-surface-raised border border-surface-border text-gray-200 shadow-specular'
               }`}
             >
-              <div className="prose prose-invert max-w-none whitespace-pre-wrap leading-relaxed text-xs">
-                {m.content}
-              </div>
+              {m.role === 'user' ? (
+                <div className="whitespace-pre-wrap text-xs font-medium">{m.content}</div>
+              ) : (
+                <div className="text-xs leading-relaxed">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      p: ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed text-gray-200">{children}</p>,
+                      strong: ({ children }) => <strong className="font-semibold text-white tracking-wide">{children}</strong>,
+                      ul: ({ children }) => <ul className="list-disc pl-4 space-y-1 my-2 text-gray-300">{children}</ul>,
+                      ol: ({ children }) => <ol className="list-decimal pl-4 space-y-2.5 my-2.5 text-gray-300 font-medium">{children}</ol>,
+                      li: ({ children }) => <li className="leading-relaxed pl-1 text-gray-200">{children}</li>,
+                      blockquote: ({ children }) => (
+                        <blockquote className="border-l-2 border-white/40 pl-3 my-2 text-gray-400 italic bg-background/50 py-1.5 rounded-r">
+                          {children}
+                        </blockquote>
+                      ),
+                      code: ({ inline, className, children, ...props }: any) => {
+                        return inline ? (
+                          <code className="bg-background/80 text-white px-1.5 py-0.5 rounded text-[11px] font-mono border border-surface-border" {...props}>
+                            {children}
+                          </code>
+                        ) : (
+                          <code className="block bg-background/90 text-gray-200 p-2.5 rounded-lg text-[11px] font-mono my-2 overflow-x-auto border border-surface-border" {...props}>
+                            {children}
+                          </code>
+                        );
+                      },
+                      h1: ({ children }) => <h1 className="text-sm font-bold text-white mt-3 mb-1.5">{children}</h1>,
+                      h2: ({ children }) => <h2 className="text-xs font-bold text-white mt-2.5 mb-1">{children}</h2>,
+                      h3: ({ children }) => <h3 className="text-xs font-semibold text-gray-100 mt-2 mb-1">{children}</h3>,
+                    }}
+                  >
+                    {m.content}
+                  </ReactMarkdown>
+                </div>
+              )}
             </div>
             {m.role === 'user' && (
               <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-surface-raised border border-surface-border text-gray-300 mt-0.5">

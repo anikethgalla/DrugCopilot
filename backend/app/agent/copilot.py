@@ -98,32 +98,49 @@ class CopilotAgent:
         focused_entity_id: Optional[str] = None
         evidence_context = ""
 
-        # Check if the query asks for candidates/drugs
-        query_lower = user_msg.lower()
-        if any(w in query_lower for w in ["repurpose", "repurposing", "candidate", "candidates", "find drug", "potential drug", "alzheimer", "parkinson", "als", "diabetes", "huntington"]):
-            dis_res = await EntityResolver.resolve_disease(user_msg)
-            if dis_res:
-                focused_entity_id = dis_res["canonical_id"]
-                tool_res = await CopilotTools.find_candidate_drugs(dis_res["canonical_id"], max_candidates=5)
-                for c in tool_res.get("candidates", []):
-                    try:
-                        candidates.append(RepurposingCandidate(**c))
-                    except Exception:
-                        pass
+        # 1. Attempt to resolve any disease referenced in the user message
+        dis_res = await EntityResolver.resolve_disease(user_msg)
+        is_known_disease = bool(
+            dis_res and 
+            dis_res.get("canonical_id") and 
+            (dis_res.get("efo_id") or dis_res.get("mondo_id") or not dis_res["canonical_id"].startswith("DISEASE_"))
+        )
+
+        if is_known_disease:
+            focused_entity_id = dis_res["canonical_id"]
+            tool_res = await CopilotTools.find_candidate_drugs(dis_res["canonical_id"], max_candidates=5)
+            for c in tool_res.get("candidates", []):
+                try:
+                    candidates.append(RepurposingCandidate(**c))
+                except Exception:
+                    pass
+            tool_records.append(
+                ToolExecutionRecord(
+                    tool_name="find_candidate_drugs",
+                    arguments={"disease_id_or_name": dis_res["canonical_id"], "max_candidates": 5},
+                    result_summary=f"Found {len(candidates)} candidates",
+                    provenance_source="ChEMBL & Open Targets Platform"
+                )
+            )
+            if candidates:
+                cand_summary = "\n".join([
+                    f"- Drug: {c.drug.name} (ChEMBL: {c.drug.chembl_id}), Overall Repurposing Score: {c.overall_score:.3f}, Classification: {c.classification.value}, Target Breakdown: {c.score_breakdown.target_association:.2f}, Pathway Overlap: {c.score_breakdown.pathway_overlap:.2f}, Hypothesis: {c.mechanism_hypothesis}"
+                    for c in candidates
+                ])
+                evidence_context = f"\nDiscovered Computational Candidates from Biomedical Knowledge Graph for {dis_res.get('name')}:\n{cand_summary}\n"
+        else:
+            # 2. Check if the user is asking about a drug entity (e.g., Donepezil, Metformin)
+            drug_res = await EntityResolver.resolve_drug(user_msg)
+            if drug_res and drug_res.get("canonical_id") and drug_res["canonical_id"].startswith("CHEMBL"):
+                focused_entity_id = drug_res["canonical_id"]
                 tool_records.append(
                     ToolExecutionRecord(
-                        tool_name="find_candidate_drugs",
-                        arguments={"disease_id_or_name": dis_res["canonical_id"], "max_candidates": 5},
-                        result_summary=f"Found {len(candidates)} candidates",
-                        provenance_source="ChEMBL & Open Targets Platform"
+                        tool_name="get_drug",
+                        arguments={"drug_id_or_name": focused_entity_id},
+                        result_summary=f"Resolved drug {drug_res.get('name')}",
+                        provenance_source="ChEMBL"
                     )
                 )
-                if candidates:
-                    cand_summary = "\n".join([
-                        f"- Drug: {c.drug.name} (ChEMBL: {c.drug.chembl_id}), Overall Repurposing Score: {c.overall_score:.3f}, Classification: {c.classification.value}, Target Breakdown: {c.score_breakdown.target_association:.2f}, Pathway Overlap: {c.score_breakdown.pathway_overlap:.2f}, Hypothesis: {c.mechanism_hypothesis}"
-                        for c in candidates
-                    ])
-                    evidence_context = f"\nDiscovered Computational Candidates from Biomedical Knowledge Graph for {dis_res.get('name')}:\n{cand_summary}\n"
 
         # Build prompt context with conversation history
         history_context = ""
@@ -151,7 +168,34 @@ User Query:
         )
         reply_text = response.text or ""
 
-        sub_obj = SubgraphResponse(**in_memory_graph.get_subgraph(focused_entity_id, max_depth=2, max_nodes=40)) if focused_entity_id else None
+        sub_obj = None
+        if focused_entity_id:
+            subgraph_dict = in_memory_graph.get_subgraph(focused_entity_id, max_depth=2, max_nodes=50)
+            existing_node_ids = {n["id"] for n in subgraph_dict.get("nodes", [])}
+            # Ensure discovered candidate drug nodes and relationships are in the subgraph
+            for cand in candidates:
+                c_id = cand.drug.canonical_id
+                if c_id not in existing_node_ids and c_id in in_memory_graph.nodes_by_id:
+                    c_node = in_memory_graph.nodes_by_id[c_id]
+                    subgraph_dict["nodes"].append({
+                        "id": c_id,
+                        "label": c_node["label"],
+                        "name": c_node["properties"].get("name") or c_id,
+                        "properties": c_node["properties"]
+                    })
+                    existing_node_ids.add(c_id)
+                # Link candidate edges to targets in subgraph
+                for neighbor in in_memory_graph.get_neighbors(c_id, direction="both"):
+                    n_id = neighbor["node"]["properties"].get("canonical_id")
+                    if n_id and n_id in existing_node_ids:
+                        subgraph_dict["edges"].append({
+                            "id": f"{c_id}-{neighbor['direction']}-{n_id}",
+                            "source": c_id if neighbor["direction"] == "out" else n_id,
+                            "target": n_id if neighbor["direction"] == "out" else c_id,
+                            "type": neighbor["edge"].get("rel_type") or neighbor["edge"].get("type") or "TARGETS",
+                            "properties": neighbor["edge"]
+                        })
+            sub_obj = SubgraphResponse(**subgraph_dict)
 
         return ChatResponse(
             conversation_id=conversation_id,
